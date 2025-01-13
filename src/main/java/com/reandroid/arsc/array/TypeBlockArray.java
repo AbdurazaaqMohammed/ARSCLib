@@ -1,18 +1,18 @@
 /*
-  *  Copyright (C) 2022 github.com/REAndroid
-  *
-  *  Licensed under the Apache License, Version 2.0 (the "License");
-  *  you may not use this file except in compliance with the License.
-  *  You may obtain a copy of the License at
-  *
-  *      http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
+ *  Copyright (C) 2022 github.com/REAndroid
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.reandroid.arsc.array;
 
 import com.reandroid.arsc.base.BlockArray;
@@ -31,9 +31,10 @@ import com.reandroid.json.JSONConvert;
 import com.reandroid.json.JSONObject;
 import com.reandroid.utils.collection.ComputeIterator;
 
+import org.apache.commons.collections4.Predicate;
+
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Predicate;
 
 public class TypeBlockArray extends BlockArray<TypeBlock>
         implements JSONConvert<JSONArray>, Comparator<TypeBlock> {
@@ -280,7 +281,7 @@ public class TypeBlockArray extends BlockArray<TypeBlock>
     public Iterator<TypeBlock> iterator(ResConfig resConfig){
         return iterator(new Predicate<TypeBlock>() {
             @Override
-            public boolean test(TypeBlock typeBlock) {
+            public boolean evaluate(TypeBlock typeBlock) {
                 return typeBlock.getResConfig().equals(resConfig);
             }
         });
@@ -454,11 +455,8 @@ public class TypeBlockArray extends BlockArray<TypeBlock>
 
     private static final Predicate<TypeBlock> NON_EMPTY_TESTER = new Predicate<TypeBlock>() {
         @Override
-        public boolean test(TypeBlock typeBlock) {
-            if(typeBlock == null || typeBlock.isNull()){
-                return false;
-            }
-            return !typeBlock.isEmpty();
+        public boolean evaluate(TypeBlock typeBlock) {
+            return typeBlock != null && !typeBlock.isNull() && !typeBlock.isEmpty();
         }
     };
 }
