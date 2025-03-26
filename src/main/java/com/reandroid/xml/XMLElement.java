@@ -32,7 +32,7 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class XMLElement extends XMLNodeTree implements Element<XMLNode> {
 

@@ -17,11 +17,10 @@ package com.reandroid.xml;
 
 import com.reandroid.utils.CompareUtil;
 import com.reandroid.utils.collection.ArrayCollection;
-import com.reandroid.utils.collection.CollectionUtil;
-
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,7 +49,7 @@ public class StyleSpanEventSet {
     }
     private List<StyleSpanEvent> getEventList() {
         List<StyleSpanEvent> eventList = this.eventList;
-        java.util.Collections.sort(eventList, CompareUtil.getComparableComparator());
+        Collections.sort( eventList, CompareUtil.getComparableComparator());
         return eventList;
     }
 

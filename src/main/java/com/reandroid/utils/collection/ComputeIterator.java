@@ -18,20 +18,20 @@ package com.reandroid.utils.collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.apache.commons.collections4.Transformer;
-
+import org.apache.commons.collections4.Predicate;
 
 public class ComputeIterator<E, T> implements Iterator<T> {
     private final Iterator<? extends E> iterator;
-    private final Transformer<? super E, T> function;
-    private final org.apache.commons.collections4.Predicate<T> filter;
+    private final Transformer<? super E, T> transformer;
+    private final Predicate<T> filter;
     private T mNext;
-    public ComputeIterator(Iterator<? extends E> iterator, Transformer<? super E, T> function, org.apache.commons.collections4.Predicate<T> filter){
+    public ComputeIterator(Iterator<? extends E> iterator, Transformer<? super E, T> transformer, Predicate<T> filter){
         this.iterator = iterator;
-        this.function = function;
+        this.transformer = transformer;
         this.filter = filter;
     }
-    public ComputeIterator(Iterator<? extends E> iterator, Transformer<? super E, T> function){
-        this(iterator, function, null);
+    public ComputeIterator(Iterator<? extends E> iterator, Transformer<? super E, T> transformer){
+        this(iterator, transformer, null);
     }
     @Override
     public boolean hasNext() {
@@ -49,7 +49,7 @@ public class ComputeIterator<E, T> implements Iterator<T> {
     private T getNext(){
         if(mNext == null) {
             while (iterator.hasNext()) {
-                T output = function.transformer(iterator.next());
+                T output = transformer.transform(iterator.next());
                 if (output != null) {
                     if(filter == null || filter.evaluate(output)){
                         mNext = output;
@@ -60,10 +60,10 @@ public class ComputeIterator<E, T> implements Iterator<T> {
         }
         return mNext;
     }
-    public static<E1, T1> Iterator<T1> of(Iterator<? extends E1> iterator, Transformer<? super E1, T1> function){
+    public static<E1, T1> Iterator<T1> of(Iterator<? extends E1> iterator, Transformer<? super E1, T1> transformer){
         if(!iterator.hasNext()){
             return EmptyIterator.of();
         }
-        return new ComputeIterator<>(iterator, function);
+        return new ComputeIterator<>(iterator, transformer);
     }
 }

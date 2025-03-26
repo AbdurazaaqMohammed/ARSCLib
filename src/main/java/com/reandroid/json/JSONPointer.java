@@ -7,6 +7,8 @@ package com.reandroid.json;
 
 import static java.lang.String.format;
 
+
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -53,7 +55,7 @@ public class JSONPointer {
         if (pointer == null) {
             throw new NullPointerException("pointer cannot be null");
         }
-        if (pointer.length() == 0 || pointer.equals("#")) {
+        if (com.reandroid.utils.StringsUtil.isEmpty(pointer) || pointer.equals("#")) {
             this.refTokens = Collections.emptyList();
             return;
         }
@@ -78,7 +80,7 @@ public class JSONPointer {
             slashIdx = refs.indexOf('/', prevSlashIdx);
             if(prevSlashIdx == slashIdx || prevSlashIdx == refs.length()) {
                 // found 2 slashes in a row ( obj//next )
-                // or single slash at the end of a string ( obj/test/ )
+                // or single slash at the end of a string ( obj/evaluate/ )
                 this.refTokens.add("");
             } else if (slashIdx >= 0) {
                 final String token = refs.substring(prevSlashIdx, slashIdx);

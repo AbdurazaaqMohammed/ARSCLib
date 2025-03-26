@@ -25,6 +25,7 @@ public class FilePermissions {
     }
 
     public boolean apply(File file) {
+
         try {
             File.class.getMethod("setExecutable", boolean.class);
             Permission owner = owner();

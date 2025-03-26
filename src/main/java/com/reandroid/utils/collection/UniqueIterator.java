@@ -18,13 +18,13 @@ package com.reandroid.utils.collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
+import org.apache.commons.collections4.Predicate;
 
 public class UniqueIterator<T> extends FilterIterator<T> {
 
     private Set<T> excludeSet;
 
-    public UniqueIterator(Iterator<T> iterator, org.apache.commons.collections4.Predicate<? super T> filter){
+    public UniqueIterator(Iterator<T> iterator, Predicate<? super T> filter){
         super(iterator, filter);
     }
     public UniqueIterator(Iterator<T> iterator){

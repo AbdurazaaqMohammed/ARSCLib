@@ -20,8 +20,8 @@ import org.apache.commons.collections4.Transformer;
 
 public class ComputeList<T, E> extends ComputeCollection<T, E> implements List<T>{
 
-    public ComputeList(List<? extends E> list, Transformer<? super E, T> function) {
-        super(list, function);
+    public ComputeList(List<? extends E> list, Transformer<? super E, T> transformer) {
+        super(list, transformer);
     }
 
     @SuppressWarnings("unchecked")

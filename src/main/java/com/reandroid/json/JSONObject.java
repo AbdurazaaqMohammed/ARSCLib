@@ -7,7 +7,6 @@ package com.reandroid.json;
 
 import com.reandroid.common.FileChannelInputStream;
 import com.reandroid.utils.StringsUtil;
-import com.reandroid.utils.collection.CollectionUtil;
 
 import java.io.*;
 
@@ -185,7 +184,7 @@ public class JSONObject extends JSONItem {
         LinkedHashMap<String, Object> copy = new LinkedHashMap<>(map);
         map.clear();
         List<String> sortedKeys = new ArrayList<>(copy.keySet());
-        java.util.Collections.sort(sortedKeys, keyComparator);
+        Collections.sort(sortedKeys, keyComparator);
         for(String key : sortedKeys){
             map.put(key, copy.get(key));
         }
@@ -766,7 +765,7 @@ public class JSONObject extends JSONItem {
         if (key.length() == 1) {
             key = StringsUtil.toLowerCaseWithLocale(key);
         } else if (!Character.isUpperCase(key.charAt(1))) {
-            key =  StringsUtil.toLowerCaseWithLocale(key.substring(0, 1)) + key.substring(1);
+            key = StringsUtil.toLowerCaseWithLocale(key.substring(0, 1)) + key.substring(1);
         }
         return key;
     }

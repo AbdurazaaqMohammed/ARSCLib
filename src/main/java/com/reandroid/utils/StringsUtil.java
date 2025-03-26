@@ -16,10 +16,8 @@
 package com.reandroid.utils;
 
 import com.reandroid.utils.collection.ArrayIterator;
-import com.reandroid.utils.collection.CollectionUtil;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -29,7 +27,28 @@ import java.util.Locale;
 public class StringsUtil {
 
     public static final String EMPTY = ObjectsUtil.of("");
+    public static String toUpperCaseWithLocale(String str) {
+        try {
+            return str.toUpperCase(Locale.ROOT);
+        } catch (Exception e) {
+            return str.toUpperCase();
+        }
+    }
 
+    public static String toLowerCaseWithLocale(String str) {
+        try {
+            return str.toLowerCase(Locale.ROOT);
+        } catch (Exception e) {
+            return str.toLowerCase();
+        }
+    }
+    public static byte[] getBytesOfString(String text, String charset) {
+        try {
+            return text.getBytes(charset);
+        } catch (UnsupportedEncodingException e) {
+            return text.getBytes(); // It should never happen
+        }
+    }
     public static byte[] getASCII(String text){
         int length = text.length();
         byte[] results = new byte[length];
@@ -38,18 +57,7 @@ public class StringsUtil {
         }
         return results;
     }
-    
-    public final static Charset UTF_8 = Charset.forName("UTF-8");
-    public final static Charset UTF_16LE = Charset.forName("UTF-16LE");
-
-    public static byte[] getBytesOfString(String text, String charset) {
-        try {
-            return text.getBytes(charset);
-        } catch (UnsupportedEncodingException e) {
-            return text.getBytes(); // It should never happen
-        }
-    }
-     public static boolean isDigits(String text){
+    public static boolean isDigits(String text){
         if(isEmpty(text)){
             return false;
         }
@@ -486,7 +494,6 @@ public class StringsUtil {
         }
         return text;
     }
-
     public static boolean isEmpty(String text){
         return text == null || text.length() == 0;
     }
@@ -500,21 +507,6 @@ public class StringsUtil {
             }
         }
         return true;
-    }
-    public static String toUpperCaseWithLocale(String str) {
-        try {
-            return str.toUpperCase(Locale.ROOT);
-        } catch (Exception e) {
-            return str.toUpperCase();
-        }
-    }
-
-    public static String toLowerCaseWithLocale(String str) {
-        try {
-            return str.toLowerCase(Locale.ROOT);
-        } catch (Exception e) {
-            return str.toLowerCase();
-        }
     }
     public static String trimASCII(String text) {
         if (text == null) {
@@ -549,7 +541,7 @@ public class StringsUtil {
         return text.substring(0, end);
     }
     public static String toUpperCase(String str){
-        if(isEmpty(str)){
+        if(str == null || str.length() == 0){
             return str;
         }
         char[] chars = str.toCharArray();

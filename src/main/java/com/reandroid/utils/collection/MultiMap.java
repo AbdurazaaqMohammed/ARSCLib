@@ -16,10 +16,9 @@
 package com.reandroid.utils.collection;
 
 import java.util.*;
-
 import org.apache.commons.collections4.Closure;
 import org.apache.commons.collections4.Transformer;
-
+import org.apache.commons.collections4.Predicate;
 
 @SuppressWarnings("unchecked")
 public class MultiMap<K, V> {
@@ -91,11 +90,11 @@ public class MultiMap<K, V> {
             consumer.execute(result);
         }
     }
-    public void putAll(Transformer<? super V, K> function, Iterator<? extends V> iterator) {
+    public void putAll(Transformer<? super V, K> transformer, Iterator<? extends V> iterator) {
         synchronized (mLock) {
             while (iterator.hasNext()) {
                 V value = iterator.next();
-                putUnlocked(function.transformer(value), value);
+                putUnlocked(transformer.transform(value), value);
             }
         }
     }
@@ -181,7 +180,7 @@ public class MultiMap<K, V> {
         }
     }
     @SuppressWarnings("all")
-    public V removeIf(Object key, org.apache.commons.collections4.Predicate<? super V> predicate) {
+    public V removeIf(Object key, Predicate<? super V> predicate) {
         synchronized (mLock) {
             if(key == null) {
                 return null;
@@ -230,7 +229,7 @@ public class MultiMap<K, V> {
         }
     }
     @SuppressWarnings("all")
-    public boolean containsValue(Object key, org.apache.commons.collections4.Predicate<? super V> predicate) {
+    public boolean containsValue(Object key, Predicate<? super V> predicate) {
         synchronized (mLock) {
             if(key == null) {
                 return false;
@@ -332,7 +331,7 @@ public class MultiMap<K, V> {
     public V get(K key) {
         return get(key, null);
     }
-    public V get(K key, org.apache.commons.collections4.Predicate<? super V> predicate) {
+    public V get(K key, Predicate<? super V> predicate) {
         synchronized (mLock) {
             if(key == null) {
                 return null;
@@ -416,7 +415,7 @@ public class MultiMap<K, V> {
             }
         }
     }
-    private V getFromEntryList(K key, EntryList<?> entryList, org.apache.commons.collections4.Predicate<? super V> predicate) {
+    private V getFromEntryList(K key, EntryList<?> entryList, Predicate<? super V> predicate) {
         if(entryList.isEmpty()) {
             this.map.remove(key);
             return null;

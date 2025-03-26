@@ -15,8 +15,6 @@
  */
 package com.reandroid.identifiers;
 
-import com.reandroid.utils.collection.CollectionUtil;
-
 import java.util.*;
 
 class IdentifierMap<CHILD extends Identifier> extends Identifier
@@ -52,7 +50,7 @@ class IdentifierMap<CHILD extends Identifier> extends Identifier
                 uniques.put(name, item);
             }
         }
-        Collections.sort(results, this);
+        java.util.Collections.sort(results, this);
         return results;
     }
     public boolean hasDuplicates(){
@@ -76,7 +74,7 @@ class IdentifierMap<CHILD extends Identifier> extends Identifier
     }
     public List<CHILD> list(){
         List<CHILD> childList = new ArrayList<>(getItems());
-        Collections.sort(childList,this);
+        java.util.Collections.sort(childList,this);
         return childList;
     }
     public Collection<CHILD> getItems(){

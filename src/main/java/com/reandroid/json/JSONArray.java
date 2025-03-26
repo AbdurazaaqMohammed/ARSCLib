@@ -6,7 +6,6 @@
 package com.reandroid.json;
 
 import com.reandroid.common.FileChannelInputStream;
-import com.reandroid.utils.collection.CollectionUtil;
 
 import java.io.*;
 import java.lang.reflect.Array;
@@ -14,7 +13,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -538,7 +536,7 @@ public class JSONArray extends JSONItem implements Iterable<Object> {
         // instead of incrementally.
         this.myArrayList.ensureCapacity(index + 1);
         while (index != this.length()) {
-            // we don't need to test validity of NULL objects
+            // we don't need to evaluate validity of NULL objects
             this.myArrayList.add(JSONObject.NULL);
         }
         return this.put(value);
@@ -699,7 +697,7 @@ public class JSONArray extends JSONItem implements Iterable<Object> {
     }
 
     public void sort(Comparator comparator) {
-        Collections.sort(this.myArrayList, comparator);
+        java.util.Collections.sort(myArrayList, comparator);
     }
 
     private void addAll(Collection<?> collection, boolean wrap) {

@@ -18,7 +18,7 @@ package com.reandroid.utils.collection;
 import com.reandroid.utils.ObjectsUtil;
 
 import java.util.*;
-
+import org.apache.commons.collections4.Predicate;
 
 public class CollectionUtil {
 
@@ -40,7 +40,9 @@ public class CollectionUtil {
         }
         int length = elements.length;
         HashSet<T> results = new HashSet<>(length);
-        Collections.addAll(results, elements);
+        for (int i = 0; i < length; i ++){
+            results.add(elements[i]);
+        }
         return results;
     }
     public static<T> HashSet<T> toHashSet(Iterator<? extends T> iterator) {
@@ -56,18 +58,8 @@ public class CollectionUtil {
         return new HashSet<>(asList(elements));
     }
 
-    public static<T extends Comparable<T>> void sort(List<T> list, Comparator comparator) {
-        Object[] a = list.toArray();
-        ArraySort.sort(a, comparator);
-        ListIterator<T> i = list.listIterator();
-        for (Object e : a) {
-            i.next();
-            i.set((T) e);
-        }
-    }
-
     public static<T extends Comparable<T>> void sort(List<T> list){
-        sort(list, getComparator());
+        java.util.Collections.sort(list, getComparator());
     }
     public static<T> T getLast(Iterator<T> iterator){
         if(iterator == null){
@@ -275,15 +267,15 @@ public class CollectionUtil {
         }
     }
     @SuppressWarnings("unchecked")
-    public static<T> org.apache.commons.collections4.Predicate<T> getAcceptAll(){
-        return (org.apache.commons.collections4.Predicate<T>) ACCEPT_ALL;
+    public static<T> Predicate<T> getAcceptAll(){
+        return (Predicate<T>) ACCEPT_ALL;
     }
     @SuppressWarnings("unchecked")
-    public static<T> org.apache.commons.collections4.Predicate<T> getRejectAll(){
-        return (org.apache.commons.collections4.Predicate<T>) REJECT_ALL;
+    public static<T> Predicate<T> getRejectAll(){
+        return (Predicate<T>) REJECT_ALL;
     }
 
-    public static<T> org.apache.commons.collections4.Predicate<? super T> orFilter(org.apache.commons.collections4.Predicate<? super T> filter1, org.apache.commons.collections4.Predicate<? super T> filter2){
+    public static<T> Predicate<? super T> orFilter(Predicate<? super T> filter1, Predicate<? super T> filter2){
         if(filter1 == null || filter1 == getRejectAll()){
             return filter2;
         }
@@ -292,7 +284,7 @@ public class CollectionUtil {
         }
         return t -> (filter1.evaluate(t) || filter2.evaluate(t));
     }
-    public static<T> org.apache.commons.collections4.Predicate<T> andFilter(org.apache.commons.collections4.Predicate<T> filter1, org.apache.commons.collections4.Predicate<T> filter2){
+    public static<T> Predicate<T> andFilter(Predicate<T> filter1, Predicate<T> filter2){
         if(filter1 == null || filter1 == getAcceptAll()){
             return filter2;
         }
@@ -301,13 +293,13 @@ public class CollectionUtil {
         }
         return t -> (filter1.evaluate(t) && filter2.evaluate(t));
     }
-    public static<T> org.apache.commons.collections4.Predicate<T> negateFilter(org.apache.commons.collections4.Predicate<T> filter){
+    public static<T> Predicate<T> negateFilter(Predicate<T> filter){
         return t -> !filter.evaluate(t);
     }
-    public static<T> org.apache.commons.collections4.Predicate<T> diffFilter(org.apache.commons.collections4.Predicate<T> filter1, org.apache.commons.collections4.Predicate<T> filter2){
+    public static<T> Predicate<T> diffFilter(Predicate<T> filter1, Predicate<T> filter2){
         return t -> (filter1.evaluate(t) != filter2.evaluate(t));
     }
-    public static<T> org.apache.commons.collections4.Predicate<T> equalFilter(org.apache.commons.collections4.Predicate<T> filter1, org.apache.commons.collections4.Predicate<T> filter2){
+    public static<T> Predicate<T> equalFilter(Predicate<T> filter1, Predicate<T> filter2){
         return t -> (filter1.evaluate(t) == filter2.evaluate(t));
     }
     @SuppressWarnings("unchecked")
@@ -322,6 +314,6 @@ public class CollectionUtil {
         }
     };
 
-    private static final org.apache.commons.collections4.Predicate<?> ACCEPT_ALL = (org.apache.commons.collections4.Predicate<Object>) o -> true;
-    private static final org.apache.commons.collections4.Predicate<?> REJECT_ALL = (org.apache.commons.collections4.Predicate<Object>) o -> false;
+    private static final Predicate<?> ACCEPT_ALL = (Predicate<Object>) o -> true;
+    private static final Predicate<?> REJECT_ALL = (Predicate<Object>) o -> false;
 }

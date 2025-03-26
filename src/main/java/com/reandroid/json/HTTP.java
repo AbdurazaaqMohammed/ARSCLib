@@ -20,7 +20,7 @@ public class HTTP {
         String         token;
 
         token = x.nextToken();
-        if (StringsUtil.toUpperCaseWithLocale(token).startsWith("HTTP")) {
+        if (StringsUtil.toLowerCaseWithLocale(token).startsWith("HTTP")) {
 
 // Response
 

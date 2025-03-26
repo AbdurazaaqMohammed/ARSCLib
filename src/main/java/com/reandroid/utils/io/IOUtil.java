@@ -19,15 +19,17 @@ import com.reandroid.common.FileChannelInputStream;
 import com.reandroid.utils.StringsUtil;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 @SuppressWarnings({"ResultOfMethodCallIgnored"})
 public class IOUtil {
 
     public static String readUtf8(File file) throws IOException {
-        return new String(readFully(file), com.reandroid.utils.StringsUtil.UTF_8);
+        return new String(readFully(file), Charset.forName("UTF-8"));
     }
     public static String readUtf8(InputStream inputStream) throws IOException {
-        return new String(readFully(inputStream), com.reandroid.utils.StringsUtil.UTF_8);
+        return new String(readFully(inputStream), Charset.forName("UTF-8"));
     }
     public static void writeUtf8(String content, File file) throws IOException {
         File tmp = file;

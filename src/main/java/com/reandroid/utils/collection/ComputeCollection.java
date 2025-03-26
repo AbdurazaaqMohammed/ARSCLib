@@ -23,15 +23,15 @@ import org.apache.commons.collections4.Transformer;
 public class ComputeCollection<T, E> implements Collection<T> {
 
     private final Collection<? extends E> source;
-    private final Transformer<? super E, T> function;
+    private final Transformer<? super E, T> transformer;
 
-    public ComputeCollection(Collection<? extends E> collection, Transformer<? super E, T> function){
+    public ComputeCollection(Collection<? extends E> collection, Transformer<? super E, T> transformer){
         this.source = collection;
-        this.function = function;
+        this.transformer = transformer;
     }
 
     public T apply(E input){
-        return function.transformer(input);
+        return transformer.transform(input);
     }
     public Collection<? extends E> getSource() {
         return source;
@@ -55,7 +55,7 @@ public class ComputeCollection<T, E> implements Collection<T> {
     }
     @Override
     public Iterator<T> iterator() {
-        return ComputeIterator.of(source.iterator(), function);
+        return ComputeIterator.of(source.iterator(), transformer);
     }
     @Override
     public Object[] toArray() {
@@ -67,7 +67,7 @@ public class ComputeCollection<T, E> implements Collection<T> {
         Iterator<? extends E> iterator = source.iterator();
         int i = 0;
         while (iterator.hasNext()){
-            results[i] = function.transformer(iterator.next());
+            results[i] = transformer.transform(iterator.next());
             i++;
         }
         return results;
@@ -89,7 +89,7 @@ public class ComputeCollection<T, E> implements Collection<T> {
         Iterator<? extends E> iterator = source.iterator();
         int i = 0;
         while (i < size && iterator.hasNext()){
-            out[i] = (T1) function.transformer(iterator.next());
+            out[i] = (T1) transformer.transform(iterator.next());
             i++;
         }
         return out;

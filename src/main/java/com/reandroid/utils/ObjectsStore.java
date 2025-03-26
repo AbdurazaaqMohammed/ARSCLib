@@ -22,7 +22,7 @@ import com.reandroid.utils.collection.SingleIterator;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 /**
  * A utility class to hold few non-null objects, the main purpose is to minimize new List class creation.

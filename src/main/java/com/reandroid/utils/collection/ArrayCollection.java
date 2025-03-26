@@ -19,7 +19,7 @@ import com.reandroid.common.ArraySupplier;
 import com.reandroid.utils.NumbersUtil;
 
 import java.util.*;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 @SuppressWarnings("unchecked")
 public class ArrayCollection<T> implements ArraySupplier<T>, List<T>, Set<T>, Swappable {
@@ -114,7 +114,7 @@ public class ArrayCollection<T> implements ArraySupplier<T>, List<T>, Set<T>, Sw
             if(result >= limit){
                 break;
             }
-            if(filter.test(get(i))){
+            if(filter.evaluate(get(i))){
                 result ++;
             }
         }
@@ -147,7 +147,7 @@ public class ArrayCollection<T> implements ArraySupplier<T>, List<T>, Set<T>, Sw
         }
         int result = 0;
         int i = this.size() - 1;
-        while (i >= end && predicate.test(get(i))) {
+        while (i >= end && predicate.evaluate(get(i))) {
             result ++;
             i --;
         }
@@ -237,7 +237,7 @@ public class ArrayCollection<T> implements ArraySupplier<T>, List<T>, Set<T>, Sw
         }
         Object[] elements = this.mElements;
         for(int i = start; i < size; i++){
-            if(predicate.test((T)elements[i])){
+            if(predicate.evaluate((T)elements[i])){
                 return true;
             }
         }
@@ -453,7 +453,11 @@ public class ArrayCollection<T> implements ArraySupplier<T>, List<T>, Set<T>, Sw
             arrayCopy(elements, out, length);
             return out;
         }
-        return (T1[]) Arrays.copyOf(elements, size, out.getClass());
+        T1[] newArray = (T1[]) java.lang.reflect.Array.newInstance(out.getClass().getComponentType(), size);
+        for (int i = 0; i < size; i++) {
+            newArray[i] = (T1) elements[i];
+        }
+        return newArray;
     }
     public <T1> T1[] toArrayFill(T1[] out) {
         Object[] elements = this.mElements;
@@ -627,7 +631,7 @@ public class ArrayCollection<T> implements ArraySupplier<T>, List<T>, Set<T>, Sw
         }
         Object[] elements = this.mElements;
         for(int i = start; i < size; i++){
-            if(predicate.test((T)elements[i])){
+            if(predicate.evaluate((T)elements[i])){
                 return i;
             }
         }
@@ -759,7 +763,7 @@ public class ArrayCollection<T> implements ArraySupplier<T>, List<T>, Set<T>, Sw
         this.mElements = update;
         return true;
     }
-    @Override
+
     public boolean removeIf(Predicate<? super T> filter){
         Object[] elements = this.mElements;
         if(elements == null){
@@ -772,7 +776,7 @@ public class ArrayCollection<T> implements ArraySupplier<T>, List<T>, Set<T>, Sw
         int result = 0;
         for(int i = 0; i < length; i++){
             T item = (T)elements[i];
-            if(filter.test(item)) {
+            if(filter.evaluate(item)) {
                 elements[i] = null;
                 notifyRemoved(i, item);
                 result ++;

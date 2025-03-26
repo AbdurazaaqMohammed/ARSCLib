@@ -48,6 +48,6 @@ public interface Transformer<I, O> {
      * @throws IllegalArgumentException (runtime) if the input is invalid
      * @throws FunctorException (runtime) if the transform cannot be completed
      */
-    O transformer(I input);
+    O transform(I input);
 
 }

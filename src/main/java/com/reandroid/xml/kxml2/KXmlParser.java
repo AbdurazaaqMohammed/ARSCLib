@@ -22,7 +22,7 @@
 
 package com.reandroid.xml.kxml2;
 
-import com.reandroid.utils.StringsUtil;
+
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -459,7 +459,7 @@ public class KXmlParser implements XmlPullParser, Closeable {
              * reference.
              */
             int peek = peekType(false);
-            if (!StringsUtil.isEmpty(text) && peek < TEXT) {
+            if (!com.reandroid.utils.StringsUtil.isEmpty(text) && peek < TEXT) {
                 type = TEXT;
                 return type;
             }

@@ -88,7 +88,7 @@ public class TableIdentifier{
             try {
                 loadPublicXml(file);
             } catch (XmlPullParserException ex) {
-                throw new IOException(ex);
+                throw new RuntimeException(ex);
             }
         }
     }
