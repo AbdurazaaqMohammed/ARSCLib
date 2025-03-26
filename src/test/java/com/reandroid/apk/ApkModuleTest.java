@@ -27,7 +27,6 @@ import com.reandroid.utils.StringsUtil;
 import com.reandroid.utils.collection.CollectionUtil;
 import com.reandroid.xml.StyleDocument;
 import com.reandroid.xml.StyleElement;
-import com.reandroid.xml.StyleText;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -95,6 +94,7 @@ public class ApkModuleTest {
         DexFile dexFile = SampleDexFileCreator.createApplicationClass(appClass, mainActivity, mainActivityLayoutId);
         byte[] bytes = dexFile.getBytes();
         apkModule.add(new ByteInputSource(bytes, "classes.dex"));
+        apkModule.getUncompressedFiles().addPath(apkModule.getZipEntryMap());
 
         File generated_apk = new File(TestUtils.getTesApkDirectory(), "generated.apk");
         generated_apk.delete();
@@ -106,6 +106,8 @@ public class ApkModuleTest {
     }
     private int createMainActivityContentViewXml(ApkModule apkModule){
         ResXmlDocument document = new ResXmlDocument();
+        document.setApkFile(apkModule);
+
         ResXmlElement root = document.getDocumentElement();
         root.setName("LinearLayout");
 
@@ -125,13 +127,22 @@ public class ApkModuleTest {
         attribute = textView.getOrCreateAndroidAttribute("layout_height", 0x010100f5);
         attribute.setTypeAndData(ValueType.DEC, -2); // wrap_content
 
-        attribute = textView.getOrCreateAndroidAttribute("text", 0x0101014f);
         TableBlock tableBlock = apkModule.getTableBlock();
         PackageBlock packageBlock = tableBlock.pickOne();
 
+        Entry idEntry = packageBlock.getOrCreate("", "id", "tv1");
+        idEntry.setValueAsBoolean(false);
+        idEntry.getHeader().setPublic(true);
+        idEntry.getHeader().setWeak(true);
+
+        attribute = textView.getOrCreateAndroidAttribute("id", 0x010100d0);
+        attribute.setTypeAndData(ValueType.REFERENCE, idEntry.getResourceId());
+
+        attribute = textView.getOrCreateAndroidAttribute("text", 0x0101014f);
+
         Entry helloEntry = packageBlock.getOrCreate(ResConfig.getDefault(), "string", "hello_world");
 
-        String text = "<hr/><br><font size=\"30\" color=\"green\">Hello World</font></br>" +
+        String text = "<hr /><br><font color=\"green\" size=\"30\">Hello World</font></br>" +
                 "<ul>" +
                 "<li><b>\nType id offset = " +
                 helloEntry.getPackageBlock().getHeaderBlock().getTypeIdOffsetItem().get() +
@@ -152,11 +163,7 @@ public class ApkModuleTest {
                 HexUtil.toHex(helloEntry.getResourceId(), 8) +
                 "</b></li>" +
                 "</ul>";
-        StyleDocument styleDocument = null;
-        try {
-            styleDocument = StyleDocument.parseStyledString(text);
-        } catch (Exception ignored) {
-        }
+        StyleDocument styleDocument = StyleDocument.create(text);
         Assert.assertNotNull(styleDocument);
         helloEntry.setValueAsString(styleDocument);
         Assert.assertEquals(text, helloEntry.getResValue().getValueAsString());
@@ -186,21 +193,24 @@ public class ApkModuleTest {
         attribute = textView2.getOrCreateAndroidAttribute("layout_height", 0x010100f5);
         attribute.setTypeAndData(ValueType.DEC, -2); // wrap_content
 
+        attribute = textView2.getOrCreateAndroidAttribute("linksClickable", 0x010100b1);
+        attribute.setValueAsBoolean(true);
+
+        attribute = textView2.getOrCreateAndroidAttribute("textIsSelectable", 0x01010316);
+        attribute.setValueAsBoolean(true);
+
         attribute = textView2.getOrCreateAndroidAttribute("text", 0x0101014f);
 
         createStyledStringInXmlAttribute(attribute);
     }
     private void createStyledStringInXmlAttribute(ResXmlAttribute attribute) {
 
-        String text = "This is <a href=\"https://www.github.com/REAndroid/ARSCLib\"><font size=\"30\" color=\"red\">STYLED!</font></a><b>string in xml document</b>";
+        String text = "\n\nThis is <font size=\"30\" color=\"red\">STYLED! string" +
+                "</font> placed directly in xml attribute android:text, contains clickable link (" +
+                " <a href=\"https://www.github.com/REAndroid/ARSCLib\">github.com/REAndroid/ARSCLib</a>)" +
+                " and <b> BOLD text</b>\n\n";
 
-        text="To em. <a href=\"intent:#Intent;action=android.settings.SYSTEM_UPDATE_SETTINGS;end\"/> Upd";
-        StyleDocument styleDocument = null;
-        try {
-            styleDocument = StyleDocument.parseStyledString(text);
-        } catch (Exception ignored) {
-            throw new RuntimeException(ignored);
-        }
+        StyleDocument styleDocument = StyleDocument.create(text);
         Assert.assertNotNull(styleDocument);
 
         attribute.setValueAsString(styleDocument);
@@ -339,7 +349,7 @@ public class ApkModuleTest {
         Entry entry = packageBlock
                 .getOrCreate("", "string", "test_issue_apkeditor_62");
 
-        String text = "<font size=\"30\" color=\"red\">Multi attribute styled string</font>";
+        String text = "<font color=\"red\" size=\"30\">Multi attribute styled string</font>";
         StyleDocument styleDocument = null;
         Exception exception = null;
         try {
@@ -452,13 +462,13 @@ public class ApkModuleTest {
 
         manifestBlock.setCompileSdkVersion(frameworkApk.getVersionCode());
         manifestBlock.setCompileSdkVersionCodename(frameworkApk.getVersionName());
-        manifestBlock.setCompileSdk(AndroidApiLevel.J);
+        manifestBlock.setCompileSdk(AndroidApiLevel.O);
 
         manifestBlock.setPlatformBuildVersionCode(frameworkApk.getVersionCode());
         manifestBlock.setPlatformBuildVersionName(frameworkApk.getVersionName());
-        manifestBlock.setPlatformBuild(AndroidApiLevel.J);
-        manifestBlock.setMinSdkVersion(AndroidApiLevel.J.getApi());
-        manifestBlock.setTargetSdkVersion(AndroidApiLevel.J.getApi());
+        manifestBlock.setPlatformBuild(AndroidApiLevel.O);
+        manifestBlock.setMinSdkVersion(AndroidApiLevel.O.getApi());
+        manifestBlock.setTargetSdkVersion(AndroidApiLevel.O.getApi());
 
         manifestBlock.addUsesPermission("android.permission.INTERNET");
         manifestBlock.addUsesPermission("android.permission.READ_EXTERNAL_STORAGE");
@@ -482,15 +492,6 @@ public class ApkModuleTest {
         Assert.assertEquals("compileSdkVersionCodeName",
                 "1.0", manifestBlock.getVersionName());
 
-        /*
-        Assert.assertEquals("platformBuildVersionCode",
-                Integer.valueOf(frameworkApk.getVersionCode()), manifestBlock.getPlatformBuildVersionCode());
-
-        Assert.assertEquals("platformBuildVersionName",
-                frameworkApk.getVersionName(), manifestBlock.getPlatformBuildVersionName());
-
-
-         */
         Assert.assertNotNull("android.permission.INTERNET",
                 manifestBlock.getUsesPermission("android.permission.INTERNET"));
         Assert.assertNotNull("android.permission.READ_EXTERNAL_STORAGE",
@@ -498,6 +499,7 @@ public class ApkModuleTest {
 
         Assert.assertNull("android.permission.NOTHING",
                 manifestBlock.getUsesPermission("android.permission.NOTHING"));
+
         manifestBlock.refreshFull();
         byte[] bytes = manifestBlock.getBytes();
         manifestBlock = new AndroidManifestBlock();

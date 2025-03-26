@@ -23,7 +23,7 @@ import com.reandroid.utils.collection.FilterIterator;
 
 import java.io.IOException;
 import java.util.Iterator;
-
+import java.util.function.Predicate;
 
 public abstract class BlockArray<T extends Block> extends BlockList<T>
         implements Creator<T>, ArraySupplier<T> {
@@ -112,27 +112,10 @@ public abstract class BlockArray<T extends Block> extends BlockList<T>
         block.setParent(null);
         block.setIndex(-1);
     }
-    public void trimLastIf(org.apache.commons.collections4.Predicate<? super T> predicate) {
-        int size = size() - countFromLast(predicate);
-        if(size != size()) {
-            setSize(size);
-        }
-    }
-    public void removeNullBlocks() {
-        removeIf(nullPredicate());
-    }
-    private org.apache.commons.collections4.Predicate<? super T> nullPredicate() {
+    private Predicate<? super T> nullPredicate() {
         return Block::isNull;
     }
-    private org.apache.commons.collections4.Predicate<? super T> nonNullPredicate() {
+    private Predicate<? super T> nonNullPredicate() {
         return block -> !block.isNull();
-    }
-
-    @Override
-    public T[] toArray() {
-        return super.toArray(newArrayInstance(size()));
-    }
-    public T[] toArrayIf(org.apache.commons.collections4.Predicate<? super T> predicate) {
-        return toArrayIf(predicate, getCreator());
     }
 }

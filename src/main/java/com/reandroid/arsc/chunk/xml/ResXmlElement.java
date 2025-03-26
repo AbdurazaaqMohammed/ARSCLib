@@ -1,6 +1,20 @@
+/*
+ *  Copyright (C) 2022 github.com/REAndroid
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.reandroid.arsc.chunk.xml;
 
-import com.reandroid.arsc.model.ResourceLibrary;
 import com.reandroid.arsc.pool.ResXmlStringPool;
 import com.reandroid.arsc.refactor.ResourceMergeOption;
 import com.reandroid.common.Namespace;
@@ -182,7 +196,7 @@ public class ResXmlElement extends ResXmlDocumentOrElement implements Element<Re
 
     @Override
     public void setAttributesUnitSize(int size, boolean recursive) {
-        getAttributeArray().setUnitSize(size);
+        getStartElement().getAttributeUnitSize().set(size);
         if (recursive) {
             super.setAttributesUnitSize(size, true);
         }
@@ -320,11 +334,7 @@ public class ResXmlElement extends ResXmlDocumentOrElement implements Element<Re
     }
 
     public ResXmlAttribute getOrCreateAndroidAttribute(String name, int resourceId){
-        return getOrCreateAttribute(
-                ResourceLibrary.URI_ANDROID,
-                ResourceLibrary.PREFIX_ANDROID,
-                name,
-                resourceId);
+        return getAttributeArray().getOrCreateAndroidAttribute(name, resourceId);
     }
     public ResXmlAttribute getOrCreateAttribute(String uri, String prefix, String name, int resourceId) {
         return getAttributeArray().getOrCreateAttribute(uri, prefix, name, resourceId);
@@ -349,18 +359,15 @@ public class ResXmlElement extends ResXmlDocumentOrElement implements Element<Re
     }
 
     public ResXmlAttribute getIdAttribute() {
-        return getStartElement().getIdAttribute();
+        return getStartElement().getIdAttributePosition().getAttribute();
     }
     public ResXmlAttribute getClassAttribute() {
-        return getStartElement().getClassAttribute();
+        return getStartElement().getClassAttributePosition().getAttribute();
     }
     public ResXmlAttribute getStyleAttribute() {
-        return getStartElement().getStyleAttribute();
+        return getStartElement().getStyleAttributePosition().getAttribute();
     }
 
-    public void computePositionalAttributes() {
-        getAttributeArray().computePositionsAndSort();
-    }
     private ResXmlAttributeArray getAttributeArray() {
         return getStartElement().getResXmlAttributeArray();
     }
@@ -508,9 +515,7 @@ public class ResXmlElement extends ResXmlDocumentOrElement implements Element<Re
     @Override
     public void parse(XmlPullParser parser) throws IOException, XmlPullParserException {
 
-        if (parser.getEventType() != XmlPullParser.START_TAG) {
-            throw new XmlPullParserException("Not START_TAG event", parser, null);
-        }
+        XMLUtil.expectEvent(parser, XmlPullParser.START_TAG);
 
         setStartLineNumber(parser.getLineNumber());
         getNamespaceList().parse(parser);
@@ -518,10 +523,10 @@ public class ResXmlElement extends ResXmlDocumentOrElement implements Element<Re
         setNamespace(parser.getNamespace(), parser.getPrefix());
         getAttributeArray().parse(parser);
 
-        parser.next();
+        parser.nextToken();
         parseInnerNodes(parser);
 
-        parser.next();
+        parser.nextToken();
     }
 
     @Override

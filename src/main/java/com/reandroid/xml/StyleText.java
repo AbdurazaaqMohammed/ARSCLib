@@ -17,7 +17,7 @@ package com.reandroid.xml;
 
 import java.io.IOException;
 
-public class StyleText extends XMLText implements StyleNode {
+public class StyleText extends XMLText {
 
     public StyleText(){
         super("");
@@ -38,20 +38,9 @@ public class StyleText extends XMLText implements StyleNode {
         }
         return 0;
     }
-    @Override
-    public void appendChar(char ch) {
-        if(ch == 0){
-            return;
-        }
-        appendText(ch);
-    }
-    @Override
-    public StyleNode getParentStyle() {
-        return (StyleNode) getParentNode();
-    }
 
     @Override
-    boolean isIndent(){
+    public boolean isIndent(){
         return false;
     }
 }

@@ -15,62 +15,51 @@
  */
 package com.reandroid.arsc.pool;
 
-import com.reandroid.arsc.array.OffsetArray;
-import com.reandroid.arsc.array.ResXmlStringArray;
-import com.reandroid.arsc.array.StringArray;
-import com.reandroid.arsc.array.StyleArray;
 import com.reandroid.arsc.chunk.xml.ResXmlDocument;
 import com.reandroid.arsc.chunk.xml.ResXmlIDMap;
-import com.reandroid.arsc.item.IntegerItem;
 import com.reandroid.arsc.item.ResXmlID;
 import com.reandroid.arsc.item.ResXmlString;
+import com.reandroid.arsc.list.ResXmlIDList;
+import com.reandroid.arsc.list.StringItemList;
 import com.reandroid.utils.NumbersUtil;
+import com.reandroid.utils.ObjectsUtil;
 import com.reandroid.xml.StyleDocument;
 
 
 public class ResXmlStringPool extends StringPool<ResXmlString> {
 
     public ResXmlStringPool(boolean is_utf8) {
-        super(is_utf8, false);
+        super(is_utf8, false, ResXmlString::new);
     }
 
     @Override
-    StringArray<ResXmlString> newInstance(OffsetArray offsets, IntegerItem itemCount, IntegerItem itemStart, boolean is_utf8) {
-        return new ResXmlStringArray(offsets, itemCount, itemStart, is_utf8);
-    }
-
-    @Override
-    public ResXmlString getOrCreate(String str){
+    public ResXmlString getOrCreate(String str) {
         return getOrCreate(0, str);
     }
     @Override
     public ResXmlString getOrCreate(StyleDocument styleDocument) {
         String xml = styleDocument.getXml();
-        if(!styleDocument.hasElements()) {
+        if (!styleDocument.hasElements()) {
             return getOrCreate(0, xml);
         }
         ResXmlString xmlString = get(xml, resXmlString -> {
-            if(!xml.equals(resXmlString.getXml()) ||
+            if (!xml.equals(resXmlString.getXml()) ||
                     resXmlString.hasResourceId()) {
                 return false;
             }
             return resXmlString.hasStyle();
         });
-        if(xmlString == null) {
+        if (xmlString == null) {
             xmlString = createNewString();
             xmlString.set(styleDocument);
         }
         return xmlString;
     }
 
-    public ResXmlString getOrCreate(int resourceId, String str){
-        ResXmlString xmlString = get(str, resXmlString -> {
-            if(!str.equals(resXmlString.getXml()) || resXmlString.hasStyle()) {
-                return false;
-            }
-            return (resourceId == 0) == (resXmlString.getResourceId() == 0);
-        });
-        if(xmlString == null) {
+    public ResXmlString getOrCreate(int resourceId, String str) {
+        ResXmlString xmlString = get(str, resXmlString ->
+                resXmlString.equalsValue(resourceId, str));
+        if (xmlString == null) {
             xmlString = createNewString(str);
             xmlString.setResourceId(resourceId);
         }
@@ -92,29 +81,45 @@ public class ResXmlStringPool extends StringPool<ResXmlString> {
                 xmlString.linkNamespacePrefixInternal(prefixXmlString);
             }
         }
-        if(xmlString == null) {
+        if (xmlString == null) {
             xmlString = createNewString(uri);
             ResXmlString prefixXmlString = getOrCreate(prefix);
             xmlString.linkNamespacePrefixInternal(prefixXmlString);
         }
         return xmlString;
     }
-    private ResXmlIDMap getResXmlIDMap(){
+
+    @Override
+    public void onPreAddInternal(int index, ResXmlString item) {
+        ResXmlIDList xmlIDMap = getResXmlIDMap().getResXmlIDArray();
+        if (index < xmlIDMap.size() - 1) {
+            xmlIDMap.createAt(index);
+        }
+        super.onPreAddInternal(index, item);
+    }
+
+    @Override
+    public void onSortedInternal() {
+        super.onSortedInternal();
+        getResXmlIDMap().getResXmlIDArray().sort();
+    }
+
+    private ResXmlIDMap getResXmlIDMap() {
         ResXmlDocument resXmlDocument = getParentInstance(ResXmlDocument.class);
-        if(resXmlDocument != null){
+        if (resXmlDocument != null) {
             return resXmlDocument.getResXmlIDMap();
         }
-        return null;
+        return ObjectsUtil.getNull();
     }
 
     public void linkResXmlIDMapInternal() {
         ResXmlIDMap resXmlIDMap = getResXmlIDMap();
-        if(resXmlIDMap == null) {
+        if (resXmlIDMap == null) {
             return;
         }
-        StringArray<ResXmlString> stringsArray = getStringsArray();
+        StringItemList<ResXmlString> stringsArray = getStringsArray();
         int size = NumbersUtil.min(resXmlIDMap.size(), stringsArray.size());
-        for(int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             ResXmlString resXmlString = stringsArray.get(i);
             ResXmlID xmlID = resXmlIDMap.get(i);
             resXmlString.linkResourceIdInternal(xmlID);
@@ -125,19 +130,11 @@ public class ResXmlStringPool extends StringPool<ResXmlString> {
     public void onChunkLoaded() {
         super.onChunkLoaded();
         linkResXmlIDMapInternal();
-        StyleArray styleArray = getStyleArray();
-        if(styleArray.size()>0){
-            notifyResXmlStringPoolHasStyles(styleArray.size());
-        }
     }
-    private static void notifyResXmlStringPoolHasStyles(int styleArrayCount){
-        if(HAS_STYLE_NOTIFIED){
-            return;
-        }
-        String msg="Not expecting ResXmlStringPool to have styles count="
-                +styleArrayCount+",\n please create issue along with this apk/file on https://github.com/REAndroid/ARSCLib";
-        System.err.println(msg);
-        HAS_STYLE_NOTIFIED=true;
+
+    @Override
+    protected void onPreRefresh() {
+        super.onPreRefresh();
+        sort();
     }
-    private static boolean HAS_STYLE_NOTIFIED;
 }

@@ -178,6 +178,7 @@ public class KXmlParser implements XmlPullParser, Closeable {
     private boolean unresolved;
 
     private Object origin;
+    private boolean mClosedWithTag;
 
     public KXmlParser(){
     }
@@ -197,6 +198,10 @@ public class KXmlParser implements XmlPullParser, Closeable {
      */
     public void keepNamespaceAttributes() {
         this.keepNamespaceAttributes = true;
+    }
+
+    public boolean isClosedWithTag() {
+        return mClosedWithTag;
     }
 
     private boolean adjustNsp() throws XmlPullParserException {
@@ -612,7 +617,6 @@ public class KXmlParser implements XmlPullParser, Closeable {
         }
 
         read('>');
-        skip();
     }
 
     /**
@@ -998,6 +1002,7 @@ public class KXmlParser implements XmlPullParser, Closeable {
      * Returns the type of the next token.
      */
     private int peekType(boolean inDeclaration) throws IOException, XmlPullParserException {
+        mClosedWithTag = false;
         if (position >= limit && !fillBuffer(1)) {
             return END_DOCUMENT;
         }
@@ -1012,6 +1017,7 @@ public class KXmlParser implements XmlPullParser, Closeable {
 
                 switch (buffer[position + 1]) {
                     case '/':
+                        mClosedWithTag = true;
                         return END_TAG; // </
                     case '?':
                         // we're looking for "<?xml " with case insensitivity

@@ -26,10 +26,12 @@ import java.io.StringWriter;
 import java.util.Iterator;
 
 public class StyleDocument extends XMLDocument implements
-        SpanSet<StyleElement>, StyleNode, Comparable<StyleDocument>{
+        SpanSet<StyleElement>, Comparable<StyleDocument> {
+
     public StyleDocument(){
         super();
     }
+
     public boolean hasElements(){
         return getElements().hasNext();
     }
@@ -44,25 +46,6 @@ public class StyleDocument extends XMLDocument implements
     // keep
     public Iterator<StyleText> getStyleTexts() {
         return InstanceIterator.of(recursiveNodes(), StyleText.class);
-    }
-
-    @Override
-    public void appendChar(char ch) {
-        if(ch == 0){
-            return;
-        }
-        XMLNode xmlNode = getLast();
-        StyleText styleText;
-        if(xmlNode instanceof StyleText){
-            styleText = (StyleText) xmlNode;
-        }else {
-            styleText = newText();
-        }
-        styleText.appendChar(ch);
-    }
-    @Override
-    public StyleNode getParentStyle() {
-        return null;
     }
 
     public String getXml(){
@@ -101,20 +84,15 @@ public class StyleDocument extends XMLDocument implements
         }
     }
     public void parseString(String xmlString) throws XmlPullParserException, IOException {
-        xmlString = "<parser>" + xmlString + "</parser>";
-        XmlPullParser parser = PARSER;
-        parser.setInput(new StringReader(xmlString));
-        parseInner(parser);
-        IOUtil.close(parser);
-    }
-    @Override
-    void write(Appendable appendable, boolean xml, boolean escapeXmlText) throws IOException {
-        appendDocument(appendable, xml);
-        appendChildes(iterator(), appendable, xml, escapeXmlText);
-    }
-    private void appendChildes(Iterator<XMLNode> iterator, Appendable appendable, boolean xml, boolean escapeXmlText) throws IOException {
-        while (iterator.hasNext()){
-            iterator.next().write(appendable, xml, escapeXmlText);
+        synchronized (PARSER) {
+            xmlString = "<parser>" + xmlString + "</parser>";
+            XmlPullParser parser = PARSER;
+            parser.setInput(new StringReader(xmlString));
+            XMLUtil.setFeatureRelaxed(parser, true);
+            XMLUtil.ensureStartTag(parser);
+            parser.nextToken();
+            parseInner(parser);
+            IOUtil.close(parser);
         }
     }
     @Override
@@ -185,6 +163,13 @@ public class StyleDocument extends XMLDocument implements
         StyleDocument styleDocument = new StyleDocument();
         styleDocument.parseString(xmlStyledString);
         return styleDocument;
+    }
+    public static StyleDocument create(String xmlStyledString) {
+        try {
+            return parseStyledString(xmlStyledString);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     private static final XmlPullParser PARSER = XMLFactory.newPullParser();

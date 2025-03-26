@@ -15,6 +15,7 @@ import com.reandroid.utils.collection.SingleIterator;
 import com.reandroid.utils.io.FileUtil;
 import com.reandroid.xml.XMLDocument;
 import com.reandroid.xml.XMLFactory;
+import com.reandroid.xml.XMLUtil;
 import com.reandroid.xml.base.Document;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -104,7 +105,7 @@ public class ResXmlDocument extends ResXmlDocumentOrElement implements
     @Override
     public XMLDocument toXml(boolean decode) {
         XMLDocument xmlDocument = new XMLDocument();
-        xmlDocument.setEncoding("utf-8");
+        xmlDocument.setEncoding(getEncoding());
         Iterator<ResXmlNode> iterator = iterator();
         while (iterator.hasNext()) {
             ResXmlNode node = iterator.next();
@@ -152,16 +153,30 @@ public class ResXmlDocument extends ResXmlDocumentOrElement implements
     @Override
     public JSONObject toJson() {
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put(JSON_encoding, getStringPool().getEncoding());
         jsonObject.put(JSON_node_type, nodeTypeName());
         jsonObject.put(JSON_nodes, nodesToJson());
         return jsonObject;
     }
     @Override
     public void fromJson(JSONObject json) {
+        getStringPool().setEncoding(json.optString(JSON_encoding));
         nodesFromJson(json);
         refresh();
     }
 
+    public String getEncoding() {
+        if (XMLUtil.KEEP_CHARSET_ENCODING) {
+            return getStringPool().getEncoding();
+        } else {
+            return "utf-8";
+        }
+    }
+    public void setEncoding(String encoding) {
+        if (XMLUtil.KEEP_CHARSET_ENCODING) {
+            getStringPool().setEncoding(encoding);
+        }
+    }
     @Override
     public int getLineNumber() {
         return 1;
@@ -229,13 +244,15 @@ public class ResXmlDocument extends ResXmlDocumentOrElement implements
     public void serialize(XmlSerializer serializer) throws IOException {
         serialize(serializer, true);
     }
+    @Override
     public void serialize(XmlSerializer serializer, boolean decode) throws IOException {
         PackageBlock packageBlock = getPackageBlock();
-        if(decode && packageBlock == null) {
+        if (decode && packageBlock == null) {
             throw new IOException("Can not decode without package");
         }
         setIndent(serializer, true);
-        serializer.startDocument("utf-8", null);
+        String encoding = getEncoding();
+        serializer.startDocument(encoding, encoding == null ? Boolean.FALSE : null);
         fixNamespaces();
         removeUnusedNamespaces();
 
@@ -253,7 +270,8 @@ public class ResXmlDocument extends ResXmlDocumentOrElement implements
         removeNullElements();
         int event = parser.getEventType();
         if (event == XmlPullParser.START_DOCUMENT) {
-            parser.next();
+            parser.nextToken();
+            setEncoding(parser.getInputEncoding());
         }
         parseInnerNodes(parser);
         refreshFull();

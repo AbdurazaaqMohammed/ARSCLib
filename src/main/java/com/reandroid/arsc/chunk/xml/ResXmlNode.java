@@ -133,6 +133,9 @@ public abstract class ResXmlNode extends WrappedBlock implements
     public boolean isText() {
         return false;
     }
+    public boolean isComment() {
+        return false;
+    }
     public boolean isUnknown() {
         return false;
     }
@@ -153,7 +156,8 @@ public abstract class ResXmlNode extends WrappedBlock implements
     static boolean isTextEvent(int event){
         return event == XmlPullParser.TEXT
                 || event == XmlPullParser.ENTITY_REF
-                || event == XmlPullParser.IGNORABLE_WHITESPACE;
+                || event == XmlPullParser.IGNORABLE_WHITESPACE
+                || event == XmlPullParser.CDSECT;
     }
 
     private static final String FEATURE_INDENT_OUTPUT = "http://xmlpull.org/v1/doc/features.html#indent-output";
@@ -198,10 +202,12 @@ public abstract class ResXmlNode extends WrappedBlock implements
 
 
 
+    public static final String JSON_encoding = ObjectsUtil.of("encoding");
     public static final String JSON_node_type = ObjectsUtil.of("node_type");
     public static final String JSON_node_type_document = ObjectsUtil.of("document");
     public static final String JSON_node_type_element = ObjectsUtil.of("element");
     public static final String JSON_node_type_text = ObjectsUtil.of("text");
+    public static final String JSON_node_type_comment = ObjectsUtil.of("comment");
     public static final String JSON_node_type_unknown = ObjectsUtil.of("unknown");
 
     public static final String JSON_name = ObjectsUtil.of("name");
@@ -215,4 +221,5 @@ public abstract class ResXmlNode extends WrappedBlock implements
     public static final String JSON_attributes = ObjectsUtil.of("attributes");
     public static final String JSON_nodes = ObjectsUtil.of("nodes");
     public static final String JSON_value = ObjectsUtil.of("value");
+    public static final String JSON_type = ObjectsUtil.of("type");
 }
