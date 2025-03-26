@@ -32,11 +32,10 @@ import com.reandroid.arsc.value.Entry;
 import com.reandroid.arsc.value.ResConfig;
 import com.reandroid.utils.CompareUtil;
 import com.reandroid.utils.collection.ArrayCollection;
-import com.reandroid.utils.collection.CollectionUtil;
 import com.reandroid.utils.collection.FilterIterator;
 
 import java.util.*;
-
+import org.apache.commons.collections4.Predicate;
 
 public class ResourceBuilder {
 
@@ -183,7 +182,7 @@ public class ResourceBuilder {
     }
     private void mergePackage(PackageBlock sourcePackage, PackageBlock resultPackage) {
         ResourceMergeOption mergeOption = this.getMergeOption();
-        org.apache.commons.collections4.Predicate<? super ResourceEntry> keepEntries = mergeOption.getKeepEntries();
+        Predicate<? super ResourceEntry> keepEntries = mergeOption.getKeepEntries();
         Iterator<ResourceEntry> iterator = FilterIterator.of(sourcePackage.getResources(), keepEntries);
         while (iterator.hasNext()){
             ResourceEntry sourceEntry = iterator.next();
@@ -225,7 +224,7 @@ public class ResourceBuilder {
         initializeEntries(sourcePackage, resultPackage);
     }
     private void initializeTypeString(PackageBlock sourcePackage, PackageBlock resultPackage) {
-        org.apache.commons.collections4.Predicate<? super ResourceEntry> keepEntries = getMergeOption().getKeepEntries();
+        Predicate<? super ResourceEntry> keepEntries = getMergeOption().getKeepEntries();
         TypeStringPool sourcePool = sourcePackage.getTypeStringPool();
         Set<String> typeSet = new HashSet<>(sourcePool.size());
         for(TypeString typeString : sourcePool) {
@@ -237,7 +236,7 @@ public class ResourceBuilder {
             }
         }
         List<String> typeList = new ArrayCollection<>(typeSet);
-        java.util.Collections.sort(typeList, CompareUtil.getComparableComparator());
+        Collections.sort( typeList, CompareUtil.getComparableComparator());
         resultPackage.getTypeStringPool().addStrings(typeList);
     }
     private void initializeSpecString(PackageBlock sourcePackage, PackageBlock resultPackage) {
@@ -251,7 +250,7 @@ public class ResourceBuilder {
         }
     }
     private void initializeEntries(String typeName, PackageBlock sourcePackage, PackageBlock resultPackage) {
-        org.apache.commons.collections4.Predicate<? super ResourceEntry> keepEntries = getMergeOption().getKeepEntries();
+        Predicate<? super ResourceEntry> keepEntries = getMergeOption().getKeepEntries();
         ArrayCollection<ResourceEntry> sourceEntryList = new ArrayCollection<>();
         Iterator<ResourceEntry> iterator = FilterIterator.of(
                 sourcePackage.getResources(typeName),

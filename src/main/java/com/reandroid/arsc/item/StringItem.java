@@ -26,6 +26,7 @@ import com.reandroid.json.JSONObject;
 import com.reandroid.utils.CompareUtil;
 import com.reandroid.utils.ObjectsStore;
 import com.reandroid.utils.ObjectsUtil;
+import com.reandroid.utils.StringsUtil;
 import com.reandroid.utils.collection.ComputeIterator;
 import com.reandroid.xml.StyleDocument;
 import org.xmlpull.v1.XmlSerializer;
@@ -34,10 +35,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class StringItem extends StringBlock implements JSONConvert<JSONObject>, Comparable<StringItem> {
 
@@ -64,7 +66,7 @@ public class StringItem extends StringBlock implements JSONConvert<JSONObject>, 
                                                  Predicate<T> resultFilter) {
         return ComputeIterator.of(getReferences(), referenceItem -> {
             T result = referenceItem.getReferredParent(parentClass);
-            if (result == null || resultFilter != null && !resultFilter.test(result)) {
+            if (result == null || resultFilter != null && !resultFilter.evaluate(result)) {
                 result = null;
             }
             return result;
@@ -293,7 +295,7 @@ public class StringItem extends StringBlock implements JSONConvert<JSONObject>, 
             if (isUtf8) {
                 return tryThreeByteDecoder(encodedBytes, offLen[0], offLen[1]);
             }
-            return new String(encodedBytes, offLen[0], offLen[1], StandardCharsets.UTF_16LE);
+            return new String(encodedBytes, offLen[0], offLen[1], Charset.forName("UTF-16LE"));
         }
     }
     private String tryThreeByteDecoder(byte[] bytes, int offset, int length) {
@@ -302,7 +304,7 @@ public class StringItem extends StringBlock implements JSONConvert<JSONObject>, 
             CharBuffer charBuffer = DECODER_3B.decode(byteBuffer);
             return charBuffer.toString();
         } catch (CharacterCodingException e) {
-            return new String(bytes, offset, length, StandardCharsets.UTF_8);
+            return new String(bytes, offset, length, Charset.forName("UTF-8"));
         }
     }
     public boolean hasStyle() {
@@ -514,7 +516,7 @@ public class StringItem extends StringBlock implements JSONConvert<JSONObject>, 
         byte[] bytes;
         byte[] lenBytes = new byte[2];
         if (str != null) {
-            bytes = str.getBytes(StandardCharsets.UTF_8);
+            bytes = StringsUtil.getBytesOfString(str, "UTF-8");
             int strLen = bytes.length;
             if ((strLen & 0xff80) != 0) {
                 lenBytes = new byte[4];
@@ -562,7 +564,7 @@ public class StringItem extends StringBlock implements JSONConvert<JSONObject>, 
         return addBytes(lenBytes, bytes, new byte[2]);
     }
     static byte[] getUtf16Bytes(String str) {
-        return str.getBytes(StandardCharsets.UTF_16LE);
+        return StringsUtil.getBytesOfString(str, "UTF-16LE");
     }
 
     private static byte[] addBytes(byte[] bytes1, byte[] bytes2, byte[] bytes3) {
@@ -595,7 +597,7 @@ public class StringItem extends StringBlock implements JSONConvert<JSONObject>, 
         return result;
     }
 
-    private static final CharsetDecoder UTF16LE_DECODER = StandardCharsets.UTF_16LE.newDecoder();
+    private static final CharsetDecoder UTF16LE_DECODER = Charset.forName("UTF-16LE").newDecoder();
     private static final CharsetDecoder DECODER_3B = ThreeByteCharsetDecoder.INSTANCE;
 
     public static final String NAME_string = ObjectsUtil.of("string");

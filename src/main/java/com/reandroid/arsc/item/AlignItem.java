@@ -130,18 +130,6 @@ public class AlignItem extends BlockItem {
         builder.append(size);
         return builder.toString();
     }
-    public static int align(int alignment, long value) {
-        if (alignment <= 1) {
-            return 0;
-        }
-        return (alignment - (int) (value % alignment)) % alignment;
-    }
-    public static int align(int alignment, int value) {
-        if (alignment <= 1) {
-            return 0;
-        }
-        return (alignment - (value % alignment)) % alignment;
-    }
 
 
     public static int align(int alignment, long value) {
@@ -158,5 +146,4 @@ public class AlignItem extends BlockItem {
     }
 
     private static final int ALIGNMENT = 4;
-
 }

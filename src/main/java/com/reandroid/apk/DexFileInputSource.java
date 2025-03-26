@@ -19,7 +19,6 @@ import com.reandroid.archive.InputSource;
 import com.reandroid.archive.RenamedInputSource;
 import com.reandroid.utils.CompareUtil;
 import com.reandroid.utils.ObjectsUtil;
-import com.reandroid.utils.collection.CollectionUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ public class DexFileInputSource extends RenamedInputSource<InputSource> implemen
     }
 
     public static void sortDexFiles(List<File> fileList){
-        java.util.Collections.sort(fileList, (Comparator<File>) (file1, file2) -> InputSource.compareDex(file1.getName(), file2.getName()));
+        java.util.Collections.sort(fileList, ((file1, file2) -> InputSource.compareDex(file1.getName(), file2.getName())));
     }
     public static List<File> listDexFiles(File dir){
         List<File> results = new ArrayList<>();

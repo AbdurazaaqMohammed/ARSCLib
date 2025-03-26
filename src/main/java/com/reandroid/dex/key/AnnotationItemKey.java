@@ -28,7 +28,7 @@ import com.reandroid.utils.collection.*;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
-
+import org.apache.commons.collections4.Predicate;
 
 public class AnnotationItemKey extends KeyList<AnnotationElementKey> implements Key, Iterable<AnnotationElementKey> {
 
@@ -142,7 +142,7 @@ public class AnnotationItemKey extends KeyList<AnnotationElementKey> implements 
         return (AnnotationItemKey) super.remove(index);
     }
     @Override
-    public AnnotationItemKey removeIf(org.apache.commons.collections4.Predicate<? super AnnotationElementKey> predicate) {
+    public AnnotationItemKey removeIf(Predicate<? super AnnotationElementKey> predicate) {
         return (AnnotationItemKey) super.removeIf(predicate);
     }
     @Override

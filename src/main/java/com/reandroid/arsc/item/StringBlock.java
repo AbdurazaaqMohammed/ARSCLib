@@ -17,6 +17,7 @@ package com.reandroid.arsc.item;
 
 import com.reandroid.utils.StringsUtil;
 
+import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 
@@ -74,5 +75,5 @@ public abstract class StringBlock extends BlockItem implements StringReference {
         return get();
     }
 
-    public static final CharsetDecoder UTF8_DECODER = com.reandroid.utils.StringsUtil.UTF_8.newDecoder();
+    public static final CharsetDecoder UTF8_DECODER = Charset.forName("UTF-8").newDecoder();
 }

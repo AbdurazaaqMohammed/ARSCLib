@@ -190,7 +190,7 @@ public abstract class ApkModuleDecoder extends ApkModuleCoder{
         if(exception instanceof IOException){
             throw (IOException) exception;
         }
-        throw new IOException(exception);
+        throw new RuntimeException(exception);
     }
 
 

@@ -50,11 +50,11 @@ public class DexUtils {
     public static<T> Comparator<T> getDexPathComparator(){
         return DexUtils::compareDex;
     }
-    public static<T, E> Comparator<T> getDexPathComparator(Transformer<T, E> function){
-        return (dex1, dex2) -> compareDex(function, dex1, dex2);
+    public static<T, E> Comparator<T> getDexPathComparator(Transformer<T, E> transformer){
+        return (dex1, dex2) -> compareDex(transformer, dex1, dex2);
     }
-    public static<T, E> int compareDex(Transformer<T, E> function, T dexPath1, T dexPath2){
-        return compareDex(function.transformer(dexPath1), function.transformer(dexPath2));
+    public static<T, E> int compareDex(Transformer<T, E> transformer, T dexPath1, T dexPath2){
+        return compareDex(transformer.transform(dexPath1), transformer.transform(dexPath2));
     }
     public static int compareDex(Object dexPath1, Object dexPath2){
         if(dexPath1 == dexPath2){

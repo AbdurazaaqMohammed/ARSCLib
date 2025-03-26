@@ -343,8 +343,10 @@ public class InsArrayDataList extends CountedBlockList<InsArrayDataList.ArrayDat
         }
     }
     static class WidthCheckingReference implements IntegerReference {
+
         private final IntegerReference width;
         private final IntegerReference reference;
+
         public WidthCheckingReference(IntegerReference width, IntegerReference reference) {
             this.width = width;
             this.reference = reference;
@@ -356,6 +358,7 @@ public class InsArrayDataList extends CountedBlockList<InsArrayDataList.ArrayDat
             }
             return reference.get();
         }
+
         @Override
         public void set(int value) {
             reference.set(value);

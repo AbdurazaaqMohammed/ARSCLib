@@ -73,7 +73,7 @@ public class SingleJsonTableInputSource extends BlockInputSource<TableBlock> {
             JSONObject jsonObject = new JSONObject(inputStream);
             tableBlock.fromJson(jsonObject);
         }catch (JSONException ex){
-            throw new IOException(inputSource.getAlias(), ex);
+            throw new RuntimeException(inputSource.getAlias(), ex);
         }
         mCache = tableBlock;
         return tableBlock;

@@ -18,6 +18,7 @@ package com.reandroid.arsc.item;
 import com.reandroid.arsc.io.BlockReader;
 import com.reandroid.utils.CompareUtil;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class FixedLengthString  extends StringItem {
@@ -74,7 +75,7 @@ public class FixedLengthString  extends StringItem {
             return null;
         }
         int length = getEndNullPosition(bytes);
-        return new String(bytes,0, length, com.reandroid.utils.StringsUtil.UTF_16LE);
+        return new String(bytes,0, length, Charset.forName("UTF-16LE"));
     }
     private static int getEndNullPosition(byte[] bytes){
         int length = bytes.length;

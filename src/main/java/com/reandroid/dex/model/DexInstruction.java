@@ -35,7 +35,7 @@ import com.reandroid.utils.collection.*;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
+import org.apache.commons.collections4.Predicate;
 
 public class DexInstruction extends DexCode {
 
@@ -367,7 +367,7 @@ public class DexInstruction extends DexCode {
     public DexInstruction getPreviousReader(int register, Opcode<?> opcode) {
         return getPreviousReader(register, instruction -> instruction.is(opcode));
     }
-    public DexInstruction getPreviousReader(int register, org.apache.commons.collections4.Predicate<DexInstruction> predicate) {
+    public DexInstruction getPreviousReader(int register, Predicate<DexInstruction> predicate) {
         DexInstruction previous = getPrevious();
         while (previous != null) {
             Opcode<?> opcode = previous.getOpcode();
@@ -396,7 +396,7 @@ public class DexInstruction extends DexCode {
     public DexInstruction getPreviousSetter(int register, Opcode<?> opcode) {
         return getPreviousSetter(register, instruction -> instruction.is(opcode));
     }
-    public DexInstruction getPreviousSetter(int register, org.apache.commons.collections4.Predicate<DexInstruction> predicate) {
+    public DexInstruction getPreviousSetter(int register, Predicate<DexInstruction> predicate) {
         DexInstruction previous = getPrevious();
         while (previous != null) {
             Opcode<?> opcode = previous.getOpcode();

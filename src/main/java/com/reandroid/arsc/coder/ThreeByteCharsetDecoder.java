@@ -15,17 +15,16 @@
   */
 package com.reandroid.arsc.coder;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
-import java.nio.charset.StandardCharsets;
 
 public class ThreeByteCharsetDecoder extends CharsetDecoder {
     public static final ThreeByteCharsetDecoder INSTANCE = new ThreeByteCharsetDecoder();
     public ThreeByteCharsetDecoder() {
-        super(com.reandroid.utils.StringsUtil.UTF_8, 1.0F, 1.0F);
+        super(Charset.forName("UTF-8"), 1.0F, 1.0F);
     }
     @Override
     protected CoderResult decodeLoop(ByteBuffer src, CharBuffer dst) {
@@ -215,7 +214,7 @@ public class ThreeByteCharsetDecoder extends CharsetDecoder {
         updatePositions(src, sourcePosition, dst, dstPosition);
         return numBytes != 0 && sourceLimit - sourcePosition >= numBytes ? CoderResult.OVERFLOW : CoderResult.UNDERFLOW;
     }
-    private static CoderResult xFlow(Buffer src, int mark, int nb) {
+    private static CoderResult xFlow(ByteBuffer src, int mark, int nb) {
         src.position(mark);
         return nb != 0 && src.remaining() >= nb ? CoderResult.OVERFLOW : CoderResult.UNDERFLOW;
     }

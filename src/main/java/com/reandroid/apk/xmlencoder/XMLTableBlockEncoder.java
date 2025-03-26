@@ -87,7 +87,7 @@ public class XMLTableBlockEncoder {
             scanResourceFiles(resourcesDirectory);
             ensureEmptyTable();
         } catch (XmlPullParserException ex) {
-            throw new IOException(ex);
+            throw new RuntimeException(ex);
         }
     }
     private void ensureEmptyTable() {
@@ -129,7 +129,7 @@ public class XMLTableBlockEncoder {
             loadPackageJson(packageBlock, pubXmlFile);
             IOUtil.close(parser);
         } catch (XmlPullParserException ex) {
-           throw new IOException(ex);
+           throw new RuntimeException(ex);
         }
     }
     private void loadPackageJson(PackageBlock packageBlock, File publicXml) throws IOException {
@@ -223,7 +223,7 @@ public class XMLTableBlockEncoder {
         try {
             xmlDocument = XMLDocument.load(manifestFile);
         } catch (XmlPullParserException ex) {
-            throw new IOException(ex);
+            throw new RuntimeException(ex);
         }
         TableBlock tableBlock = getTableBlock();
         FrameworkApk frameworkApk = getApkModule().initializeAndroidFramework(xmlDocument);

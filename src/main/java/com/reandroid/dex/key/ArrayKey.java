@@ -24,7 +24,7 @@ import com.reandroid.utils.collection.ArrayCollection;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Comparator;
-
+import org.apache.commons.collections4.Predicate;
 
 public class ArrayKey<T extends Key> extends KeyList<T> {
 
@@ -47,7 +47,7 @@ public class ArrayKey<T extends Key> extends KeyList<T> {
         return (ArrayKey<T>) super.remove(index);
     }
     @Override
-    public ArrayKey<T> removeIf(org.apache.commons.collections4.Predicate<? super T> predicate) {
+    public ArrayKey<T> removeIf(Predicate<? super T> predicate) {
         return (ArrayKey<T>) super.removeIf(predicate);
     }
     @Override

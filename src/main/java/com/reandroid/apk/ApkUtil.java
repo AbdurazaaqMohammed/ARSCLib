@@ -17,8 +17,6 @@ package com.reandroid.apk;
 
 import com.reandroid.arsc.chunk.PackageBlock;
 import com.reandroid.utils.CompareUtil;
-import com.reandroid.utils.StringsUtil;
-import com.reandroid.utils.collection.CollectionUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,7 +26,7 @@ public class ApkUtil {
     public static String replaceRootDir(String path, String dirName){
         int i=path.indexOf('/')+1;
         path=path.substring(i);
-        if(!StringsUtil.isEmpty(dirName)){
+        if(dirName != null && dirName.length()>0){
             if(!dirName.endsWith("/")){
                 dirName=dirName+"/";
             }

@@ -129,22 +129,22 @@ public class MethodKey implements ProgramKey {
                 getProto().mentionedKeys());
     }
 
-    public MethodKey replaceTypes(Transformer<TypeKey, TypeKey> function) {
+    public MethodKey replaceTypes(Transformer<TypeKey, TypeKey> transformer) {
         MethodKey result = this;
         TypeKey typeKey = getDeclaring();
-        typeKey = typeKey.changeTypeName(function.transformer(typeKey));
+        typeKey = typeKey.changeTypeName(transformer.transform(typeKey));
 
         result = result.changeDeclaring(typeKey);
 
         typeKey = getReturnType();
-        typeKey = typeKey.changeTypeName(function.transformer(typeKey));
+        typeKey = typeKey.changeTypeName(transformer.transform(typeKey));
 
         result = result.changeReturnType(typeKey);
 
         int count = getParametersCount();
         for(int i = 0; i < count; i++){
             typeKey = getParameter(i);
-            typeKey = typeKey.changeTypeName(function.transformer(typeKey));
+            typeKey = typeKey.changeTypeName(transformer.transform(typeKey));
             result = result.changeParameter(i, typeKey);
         }
         return result;
@@ -392,8 +392,6 @@ public class MethodKey implements ProgramKey {
         }
         return create(defining, StringKey.create(name), protoKey);
     }
-
-    //Not currently in use
     public static MethodKey convert(Method method) {
         TypeKey declaring = TypeKey.convert(method.getDeclaringClass());
         TypeKey returnType = TypeKey.convert(method.getReturnType());

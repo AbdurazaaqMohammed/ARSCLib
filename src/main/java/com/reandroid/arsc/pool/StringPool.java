@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public abstract class StringPool<T extends StringItem> extends Chunk<StringPoolHeader>
         implements Iterable<T>, JSONConvert<JSONArray> {

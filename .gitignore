@@ -4,3 +4,5 @@
 /test-apk/
 /src/main/java/zorg/
 /gradle/wrapper/gradle-wrapper.properties
+/.idea
+local.properties

@@ -17,15 +17,12 @@ package com.reandroid.dex.smali.model;
 
 import com.reandroid.dex.smali.SmaliReader;
 import com.reandroid.dex.smali.SmaliWriter;
-import com.reandroid.utils.StringsUtil;
 import com.reandroid.utils.collection.ArrayCollection;
 import com.reandroid.utils.collection.InstanceIterator;
 
-import org.apache.commons.collections4.Predicate;
-
 import java.io.IOException;
 import java.util.Iterator;
-
+import org.apache.commons.collections4.Predicate;
 
 public class SmaliSet<T extends Smali> extends Smali{
 
@@ -94,18 +91,10 @@ public class SmaliSet<T extends Smali> extends Smali{
     public T remove(int i) {
         return body.remove(i);
     }
-    public boolean removeIf(org.apache.commons.collections4.Predicate<? super T> filter){
+    public boolean removeIf( org. apache. commons. collections4.Predicate<? super T> filter){
         return body.removeIf(filter);
     }
     public boolean removeInstances(Class<?> instance){
-        ArrayCollection<String> results = new ArrayCollection<>(
-                StringsUtil.split("full", '\n', true));
-        results.removeIf(new org.apache.commons.collections4.Predicate<String>() {
-            @Override
-            public boolean evaluate(String text) {
-                return StringsUtil.isEmpty(text);
-            }
-        });
         return body.removeIf(new Predicate<T>() {
             @Override
             public boolean evaluate(T obj) {

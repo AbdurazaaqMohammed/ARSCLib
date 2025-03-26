@@ -97,7 +97,7 @@ public class FrameworkTable extends TableBlock {
             PackageBlock packageBlock = pickOne();
             if(packageBlock!=null){
                 String name = packageBlock.getName();
-                if(name!=null && !name.trim().isEmpty()){
+                if(name!=null && name.trim().length() != 0){
                     frameworkName = name;
                 }
             }

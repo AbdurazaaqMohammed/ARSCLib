@@ -22,14 +22,13 @@ import com.reandroid.dex.smali.SmaliWriter;
 import com.reandroid.utils.CompareUtil;
 import com.reandroid.utils.ObjectsUtil;
 import com.reandroid.utils.collection.ArrayCollection;
-import com.reandroid.utils.collection.CollectionUtil;
 import com.reandroid.utils.collection.IterableIterator;
 import com.reandroid.utils.io.FileUtil;
 
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
-
+import org.apache.commons.collections4.Predicate;
 
 public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayout> {
 
@@ -248,7 +247,7 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
     public void readBytes(BlockReader reader) throws IOException {
         getContainerBlock().readBytes(reader);
     }
-    public void readBytes(BlockReader reader, org.apache.commons.collections4.Predicate<SectionType<?>> filter) throws IOException {
+    public void readBytes(BlockReader reader, Predicate<SectionType<?>> filter) throws IOException {
         getContainerBlock().readBytes(reader, filter);
     }
     public void write(File file) throws IOException {
@@ -474,16 +473,16 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
     }
 
 
-    public static DexFile read(byte[] dexBytes, org.apache.commons.collections4.Predicate<SectionType<?>> filter) throws IOException {
+    public static DexFile read(byte[] dexBytes, Predicate<SectionType<?>> filter) throws IOException {
         return read(new BlockReader(dexBytes), filter);
     }
-    public static DexFile read(File file, org.apache.commons.collections4.Predicate<SectionType<?>> filter) throws IOException {
+    public static DexFile read(File file, Predicate<SectionType<?>> filter) throws IOException {
         return read(new BlockReader(file), filter);
     }
-    public static DexFile read(InputStream inputStream, org.apache.commons.collections4.Predicate<SectionType<?>> filter) throws IOException {
+    public static DexFile read(InputStream inputStream, Predicate<SectionType<?>> filter) throws IOException {
         return read(new BlockReader(inputStream), filter);
     }
-    public static DexFile read(BlockReader reader, org.apache.commons.collections4.Predicate<SectionType<?>> filter) throws IOException {
+    public static DexFile read(BlockReader reader, Predicate<SectionType<?>> filter) throws IOException {
         DexFile dexFile = new DexFile(new DexContainerBlock());
         dexFile.readBytes(reader, filter);
         return dexFile;

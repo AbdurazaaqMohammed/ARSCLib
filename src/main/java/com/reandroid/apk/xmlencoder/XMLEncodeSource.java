@@ -64,7 +64,7 @@ public class XMLEncodeSource extends ByteInputSource {
         try {
             array = encode().getBytes();
         } catch (XmlPullParserException ex) {
-            throw new IOException(ex);
+            throw new RuntimeException(ex);
         }
         return array;
     }

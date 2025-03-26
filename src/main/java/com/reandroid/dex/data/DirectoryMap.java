@@ -24,7 +24,7 @@ import com.reandroid.utils.collection.ComputeIterator;
 import com.reandroid.utils.collection.FilterIterator;
 
 import java.util.Iterator;
-
+import org.apache.commons.collections4.Predicate;
 
 public class DirectoryMap<DEFINITION extends DefIndex, VALUE extends DataItem>
         extends CountedBlockList<DirectoryEntry<DEFINITION, VALUE>>
@@ -80,7 +80,7 @@ public class DirectoryMap<DEFINITION extends DefIndex, VALUE extends DataItem>
     public void remove(DEFINITION definition) {
         super.removeIf(entry -> entry.equalsDefIndex(definition));
     }
-    public void remove(DEFINITION definition, org.apache.commons.collections4.Predicate<VALUE> filter) {
+    public void remove(DEFINITION definition, Predicate<VALUE> filter) {
         super.removeIf(entry -> entry.equalsDefIndex(definition) && filter.evaluate(entry.getValue()));
     }
     public void link(DEFINITION definition){

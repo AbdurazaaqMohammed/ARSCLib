@@ -34,9 +34,9 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import org.apache.commons.collections4.Predicate;
 
-// not used
-public class ApkModuleXmlDecoder extends ApkModuleDecoder implements org.apache.commons.collections4.Predicate<Entry> {
+public class ApkModuleXmlDecoder extends ApkModuleDecoder implements Predicate<Entry> {
     private final Map<Integer, Set<ResConfig>> decodedEntries;
     private boolean keepResPath;
 

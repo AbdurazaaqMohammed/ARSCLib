@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.List;
-
+import org.apache.commons.collections4.Predicate;
 
 public class InstructionList extends FixedBlockContainer implements
         Iterable<Ins>, SmaliFormat {
@@ -191,7 +191,7 @@ public class InstructionList extends FixedBlockContainer implements
         return iterator(opcode, null);
     }
     @SuppressWarnings("unchecked")
-    public<T1 extends Ins> Iterator<T1> iterator(Opcode<T1> opcode, org.apache.commons.collections4.Predicate<? super T1> filter){
+    public<T1 extends Ins> Iterator<T1> iterator(Opcode<T1> opcode, Predicate<? super T1> filter){
         return ComputeIterator.of(iterator(), ins -> {
             T1 result = null;
             if(ins != null && ins.getOpcode() == opcode){

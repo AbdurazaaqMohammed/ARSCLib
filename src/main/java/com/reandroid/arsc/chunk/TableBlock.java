@@ -42,7 +42,7 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-
+import org.apache.commons.collections4.Predicate;
 
 public class TableBlock extends Chunk<TableHeader>
         implements MainChunk, Iterable<PackageBlock>, JSONConvert<JSONObject> {
@@ -494,7 +494,7 @@ public class TableBlock extends Chunk<TableHeader>
         }
         return resolver.resolveWithConfig(referenceId, resConfig);
     }
-    public List<Entry> resolveReference(int referenceId, org.apache.commons.collections4.Predicate<Entry> filter){
+    public List<Entry> resolveReference(int referenceId, Predicate<Entry> filter){
         ReferenceResolver resolver = this.referenceResolver;
         if(resolver == null){
             resolver = new ReferenceResolver(this);
