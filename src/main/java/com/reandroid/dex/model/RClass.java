@@ -46,7 +46,13 @@ public class RClass extends DexClass {
     public RClass(DexLayout dexLayout, ClassId classId) {
         super(dexLayout, classId);
     }
+    public RClass(DexClass rClass) {
+        this(rClass.getDexLayout(), rClass.getId());
+    }
 
+    public Iterator<RField> loadAll(Iterator<? extends ResourceEntry> iterator) {
+        return ComputeIterator.of(iterator, this::load);
+    }
     public RField load(ResourceEntry resourceEntry){
         if(resourceEntry.isEmpty()){
             return null;
@@ -128,7 +134,7 @@ public class RClass extends DexClass {
         }
         DalvikInnerClass dalvikInnerClass = DalvikInnerClass.getOrCreate(this);
         dalvikInnerClass.setName(inner);
-        dalvikInnerClass.setAccessFlags(getAccessFlagsValue());
+        dalvikInnerClass.setAccessFlagsValue(getAccessFlagsValue());
     }
     private void ensureDalvikEnclosingClass() {
         TypeKey typeKey = getKey();

@@ -37,10 +37,13 @@ public class SmaliWriterSetting {
     private boolean localRegistersCount;
     private int maximumCommentLines;
 
+    private boolean enableComments;
+
     public SmaliWriterSetting() {
         this.sequentialLabel = true;
         this.commentUnicodeStrings = false;
         this.localRegistersCount = true;
+        this.enableComments = true;
         this.maximumCommentLines = 500;
     }
 
@@ -49,6 +52,13 @@ public class SmaliWriterSetting {
     }
     public void setSequentialLabel(boolean sequentialLabel) {
         this.sequentialLabel = sequentialLabel;
+    }
+
+    public boolean isEnableComments() {
+        return enableComments;
+    }
+    public void setEnableComments(boolean enableComments) {
+        this.enableComments = enableComments;
     }
 
     public boolean isCommentUnicodeStrings() {
@@ -80,13 +90,13 @@ public class SmaliWriterSetting {
 
     public void writeResourceIdComment(SmaliWriter writer, long l) throws IOException {
         ResourceIdComment resourceIdComment = getResourceIdComment();
-        if(resourceIdComment != null){
+        if (resourceIdComment != null) {
             resourceIdComment.writeComment(writer, (int)l);
         }
     }
     public void writeResourceIdComment(SmaliWriter writer, int i) throws IOException {
         ResourceIdComment resourceIdComment = getResourceIdComment();
-        if(resourceIdComment != null){
+        if (resourceIdComment != null) {
             resourceIdComment.writeComment(writer, i);
         }
     }
@@ -97,14 +107,16 @@ public class SmaliWriterSetting {
         this.resourceIdComment = resourceIdComment;
     }
     public void setResourceIdComment(PackageBlock packageBlock) {
-        this.setResourceIdComment(new ResourceIdComment.ResourceTableComment(packageBlock));
+        this.setResourceIdComment(ResourceIdComment.of(packageBlock));
     }
 
     public void writeMethodComment(SmaliWriter writer, MethodKey methodKey) throws IOException {
-        List<MethodComment> methodCommentList = getMethodCommentList();
-        if(methodCommentList != null) {
-            for(MethodComment methodComment : methodCommentList) {
-                methodComment.writeComment(writer, methodKey);
+        if (isEnableComments()) {
+            List<MethodComment> methodCommentList = getMethodCommentList();
+            if (methodCommentList != null) {
+                for (MethodComment methodComment : methodCommentList) {
+                    methodComment.writeComment(writer, methodKey);
+                }
             }
         }
     }
@@ -113,20 +125,20 @@ public class SmaliWriterSetting {
     }
     public void clearMethodComments() {
         List<MethodComment> commentList = this.methodCommentList;
-        if(commentList != null) {
+        if (commentList != null) {
             commentList.clear();
         }
     }
     public void addMethodComment(MethodComment methodComment) {
-        if(methodComment == null) {
+        if (methodComment == null) {
             return;
         }
         List<MethodComment> commentList = this.methodCommentList;
-        if(commentList == null) {
+        if (commentList == null) {
             commentList = new ArrayCollection<>();
             this.methodCommentList = commentList;
         }
-        if(!commentList.contains(methodComment)) {
+        if (!commentList.contains(methodComment)) {
             commentList.add(methodComment);
         }
     }
@@ -135,10 +147,12 @@ public class SmaliWriterSetting {
         addMethodComment(new MethodComment.MethodImplementComment(classRepository));
     }
     public void writeClassComment(SmaliWriter writer, TypeKey typeKey) throws IOException {
-        List<ClassComment> commentList = getClassCommentList();
-        if(commentList != null) {
-            for(ClassComment comment : commentList) {
-                comment.writeComment(writer, typeKey);
+        if (isEnableComments()) {
+            List<ClassComment> commentList = getClassCommentList();
+            if (commentList != null) {
+                for (ClassComment comment : commentList) {
+                    comment.writeComment(writer, typeKey);
+                }
             }
         }
     }
@@ -148,20 +162,20 @@ public class SmaliWriterSetting {
     }
     public void clearClassComments() {
         List<ClassComment> commentList = this.classCommentList;
-        if(commentList != null) {
+        if (commentList != null) {
             commentList.clear();
         }
     }
     public void addClassComment(ClassComment classComment) {
-        if(classComment == null) {
+        if (classComment == null) {
             return;
         }
         List<ClassComment> commentList = this.classCommentList;
-        if(commentList == null) {
+        if (commentList == null) {
             commentList = new ArrayCollection<>();
             this.classCommentList = commentList;
         }
-        if(!commentList.contains(classComment)) {
+        if (!commentList.contains(classComment)) {
             commentList.add(classComment);
         }
     }

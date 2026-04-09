@@ -36,8 +36,8 @@ public class SmaliRegisterSet extends SmaliSet<SmaliRegister> implements
         super();
         this.format = format;
     }
-    public SmaliRegisterSet(){
-        this(RegisterFormat.READ);
+    public SmaliRegisterSet() {
+        this(RegisterFormat.READ16);
     }
 
     public RegistersTable getRegistersTable() {
@@ -141,15 +141,18 @@ public class SmaliRegisterSet extends SmaliSet<SmaliRegister> implements
         SmaliParseException.expect(reader, '{');
         reader.skipWhitespacesOrComment();
 
-        // first register
-        parseNext(reader);
+        if (reader.get() != '}') {
+            // first register
+            parseNext(reader);
 
-        SmaliParseException.expect(reader, '.');
-        SmaliParseException.expect(reader, '.');
-        reader.skipWhitespacesOrComment();
+            SmaliParseException.expect(reader, '.');
+            reader.skipWhitespaces();
+            SmaliParseException.expect(reader, '.');
+            reader.skipWhitespacesOrComment();
 
-        // second register
-        parseNext(reader);
+            // second register
+            parseNext(reader);
+        }
 
         SmaliParseException.expect(reader, '}');
     }

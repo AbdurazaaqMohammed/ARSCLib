@@ -119,7 +119,7 @@ public class RDeclareStyleable extends RStyleableItem implements Iterable<Intege
         Iterator<DexInstruction> iterator = staticConstructor.getInstructions();
         while (iterator.hasNext()) {
             DexInstruction instruction = iterator.next();
-            if(instruction.is(Opcode.SPUT_OBJECT) && fieldKey.equals(instruction.getFieldKey())) {
+            if(instruction.is(Opcode.SPUT_OBJECT) && fieldKey.equals(instruction.getKeyAsField())) {
                 return instruction;
             }
         }
@@ -276,7 +276,7 @@ public class RDeclareStyleable extends RStyleableItem implements Iterable<Intege
                 }
                 if(indexInstruction.getAsInteger() == index) {
                     return aput.getPreviousSetter(aput.getRegister(0),
-                            DexInstruction::isNumber);
+                            DexInstruction::isConstNumber);
                 }
                 aput = aput.getPreviousReader(aput.getRegister(1),
                         Opcode.APUT);
@@ -292,7 +292,7 @@ public class RDeclareStyleable extends RStyleableItem implements Iterable<Intege
                 return null;
             }
             DexInstruction previous = newArray.getPreviousSetter(newArray.getRegister(1),
-                    DexInstruction::isNumber);
+                    DexInstruction::isConstNumber);
             if(previous != null) {
                 this.sizeInstruction = previous;
                 return previous;

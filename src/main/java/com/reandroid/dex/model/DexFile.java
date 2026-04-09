@@ -18,18 +18,19 @@ package com.reandroid.dex.model;
 import com.reandroid.arsc.io.BlockReader;
 import com.reandroid.dex.id.ClassId;
 import com.reandroid.dex.sections.*;
+import com.reandroid.dex.smali.SmaliReaderSetting;
 import com.reandroid.dex.smali.SmaliWriter;
+import com.reandroid.dex.smali.SmaliWriterSetting;
 import com.reandroid.utils.CompareUtil;
 import com.reandroid.utils.ObjectsUtil;
 import com.reandroid.utils.collection.ArrayCollection;
-import com.reandroid.utils.collection.CollectionUtil;
 import com.reandroid.utils.collection.IterableIterator;
 import com.reandroid.utils.io.FileUtil;
 
 import java.io.*;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.function.Predicate;
 
 public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayout> {
 
@@ -130,9 +131,7 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
     }
 
     public void clearEmptySections() {
-        for (DexLayout dexLayout : this) {
-            dexLayout.clearEmptySections();
-        }
+        getContainerBlock().clearEmptySections();
     }
     public Iterator<DexInstruction> getDexInstructions() {
         return new IterableIterator<DexLayout, DexInstruction>(iterator()) {
@@ -171,10 +170,15 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
         }
         return result;
     }
-    public int clearUnused(){
-        int result = 0;
-        for(DexLayout dexLayout : this){
-            result += dexLayout.clearUnused();
+    public int clearUnused() {
+        return getContainerBlock().clearUnused();
+    }
+
+    @Override
+    public int shrink() {
+        int result = clearUnused();
+        for (DexLayout layout : this) {
+            result += layout.shrink();
         }
         return result;
     }
@@ -248,7 +252,7 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
     public void readBytes(BlockReader reader) throws IOException {
         getContainerBlock().readBytes(reader);
     }
-    public void readBytes(BlockReader reader, org.apache.commons.collections4.Predicate<SectionType<?>> filter) throws IOException {
+    public void readBytes(BlockReader reader, Predicate<SectionType<?>> filter) throws IOException {
         getContainerBlock().readBytes(reader, filter);
     }
     public void write(File file) throws IOException {
@@ -259,8 +263,10 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
     public void write(OutputStream outputStream) throws IOException {
         getContainerBlock().writeBytes(outputStream);
     }
-
     public void parseSmaliDirectory(File dir) throws IOException {
+        parseSmaliDirectory(null, dir);
+    }
+    public void parseSmaliDirectory(SmaliReaderSetting readerSetting, File dir) throws IOException {
         File fileInfo = new File(dir, DexFileInfo.FILE_NAME);
         if (fileInfo.isFile()) {
             DexFileInfo.readJson(fileInfo).applyTo(this);
@@ -271,12 +277,14 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
             for (int i = 0; i < size; i++) {
                 File file = layoutDir.get(i);
                 DexLayout layout = getOrCreateAt(i);
-                layout.parseSmaliDirectory(file);
+                layout.parseSmaliDirectory(readerSetting, file);
+                shrink();
             }
         } else {
-            getOrCreateFirst().parseSmaliDirectory(dir);
+            getOrCreateFirst().parseSmaliDirectory(readerSetting, dir);
         }
     }
+    @Deprecated
     public void writeSmali(SmaliWriter writer, File root) throws IOException {
         requireNotClosed();
         root = new File(root, buildSmaliDirectoryName());
@@ -289,11 +297,30 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
             }
         } else {
             int size = size();
-            for(int i = 0; i < size; i++) {
+            for (int i = 0; i < size; i++) {
                 DexLayout dexLayout = getLayout(i);
-                String name = "layout" + i;
+                String name = DexLayout.DIRECTORY_PREFIX + i;
                 File dir = new File(root, name);
                 dexLayout.writeSmali(writer, dir);
+            }
+        }
+    }
+    public void writeSmali(SmaliWriterSetting writerSetting, File root) throws IOException {
+        requireNotClosed();
+        DexFileInfo fileInfo = DexFileInfo.fromDex(this);
+        fileInfo.saveToDirectory(root);
+        if (!isMultiLayout()) {
+            DexLayout first = getFirst();
+            if (first != null) {
+                first.writeSmali(writerSetting, root);
+            }
+        } else {
+            int size = size();
+            for (int i = 0; i < size; i++) {
+                DexLayout dexLayout = getLayout(i);
+                String name = DexLayout.DIRECTORY_PREFIX + i;
+                File dir = new File(root, name);
+                dexLayout.writeSmali(writerSetting, dir);
             }
         }
     }
@@ -320,7 +347,7 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
         if (results.isEmpty()) {
             return null;
         }
-        java.util.Collections.sort(results, CompareUtil.getToStringComparator());
+        results.sort(CompareUtil.getToStringComparator());
         return results;
     }
     private boolean isLayoutDirectory(File dir) {
@@ -328,7 +355,7 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
             return false;
         }
         String name = dir.getName();
-        String prefix = "layout";
+        String prefix = DexLayout.DIRECTORY_PREFIX;
         if (!name.startsWith(prefix)) {
             return false;
         }
@@ -464,7 +491,9 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
         return read(dexBytes, null);
     }
     public static DexFile read(File file) throws IOException {
-        return read(file, null);
+        DexFile dexFile = read(file, null);
+        dexFile.setSimpleName(file.getName());
+        return dexFile;
     }
     public static DexFile read(InputStream inputStream) throws IOException {
         return read(inputStream, null);
@@ -474,16 +503,18 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
     }
 
 
-    public static DexFile read(byte[] dexBytes, org.apache.commons.collections4.Predicate<SectionType<?>> filter) throws IOException {
+    public static DexFile read(byte[] dexBytes, Predicate<SectionType<?>> filter) throws IOException {
         return read(new BlockReader(dexBytes), filter);
     }
-    public static DexFile read(File file, org.apache.commons.collections4.Predicate<SectionType<?>> filter) throws IOException {
-        return read(new BlockReader(file), filter);
+    public static DexFile read(File file, Predicate<SectionType<?>> filter) throws IOException {
+        DexFile dexFile = read(new BlockReader(file), filter);
+        dexFile.setSimpleName(file.getName());
+        return dexFile;
     }
-    public static DexFile read(InputStream inputStream, org.apache.commons.collections4.Predicate<SectionType<?>> filter) throws IOException {
+    public static DexFile read(InputStream inputStream, Predicate<SectionType<?>> filter) throws IOException {
         return read(new BlockReader(inputStream), filter);
     }
-    public static DexFile read(BlockReader reader, org.apache.commons.collections4.Predicate<SectionType<?>> filter) throws IOException {
+    public static DexFile read(BlockReader reader, Predicate<SectionType<?>> filter) throws IOException {
         DexFile dexFile = new DexFile(new DexContainerBlock());
         dexFile.readBytes(reader, filter);
         return dexFile;

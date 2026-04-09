@@ -20,10 +20,11 @@ import com.reandroid.dex.smali.SmaliWriter;
 import com.reandroid.dex.smali.model.Smali;
 import com.reandroid.dex.smali.model.SmaliDebugElement;
 import com.reandroid.dex.smali.model.SmaliDebugRegister;
+import com.reandroid.utils.CompareUtil;
 
 import java.io.IOException;
 
-abstract class DebugRegisterNumber extends DebugElement {
+abstract class DebugRegisterNumber extends DebugElementBlock {
 
     private final Ule128Item registerNumber;
 
@@ -44,7 +45,7 @@ abstract class DebugRegisterNumber extends DebugElement {
     }
 
     @Override
-    public void appendExtra(SmaliWriter writer) throws IOException {
+    public void appendLabelName(SmaliWriter writer) throws IOException {
         if(isValid()) {
             getSmaliDirective().append(writer);
             writer.appendRegister(getRegisterNumber());
@@ -52,7 +53,7 @@ abstract class DebugRegisterNumber extends DebugElement {
     }
 
     @Override
-    public void merge(DebugElement element){
+    public void merge(DebugElementBlock element){
         super.merge(element);
         DebugRegisterNumber coming = (DebugRegisterNumber) element;
         this.registerNumber.set(coming.registerNumber.get());
@@ -64,6 +65,12 @@ abstract class DebugRegisterNumber extends DebugElement {
         SmaliDebugElement smaliDebugElement = (SmaliDebugElement) smali;
         SmaliDebugRegister smaliDebugRegister = (SmaliDebugRegister) smaliDebugElement;
         setRegister(smaliDebugRegister.getRegister().getValue());
+    }
+
+    @Override
+    int compareDetailElement(DebugElementBlock element) {
+        DebugRegisterNumber debug = (DebugRegisterNumber) element;
+        return CompareUtil.compare(getRegisterNumber(), debug.getRegisterNumber());
     }
 
     @Override

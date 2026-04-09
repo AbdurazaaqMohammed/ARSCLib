@@ -15,19 +15,21 @@
  */
 package com.reandroid.utils.collection;
 
+import com.reandroid.utils.ObjectsUtil;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
+import java.util.function.Predicate;
 
 public class UniqueIterator<T> extends FilterIterator<T> {
 
     private Set<T> excludeSet;
 
-    public UniqueIterator(Iterator<T> iterator, org.apache.commons.collections4.Predicate<? super T> filter){
+    public UniqueIterator(Iterator<? extends T> iterator, Predicate<? super T> filter){
         super(iterator, filter);
     }
-    public UniqueIterator(Iterator<T> iterator){
+    public UniqueIterator(Iterator<? extends T> iterator){
         super(iterator);
     }
 
@@ -54,7 +56,7 @@ public class UniqueIterator<T> extends FilterIterator<T> {
     }
 
     @Override
-    public boolean evaluate(T item) {
+    public boolean test(T item) {
         if(item == null){
             return false;
         }
@@ -69,5 +71,25 @@ public class UniqueIterator<T> extends FilterIterator<T> {
             excludeSet.clear();
             this.excludeSet = null;
         }
+    }
+    public static<T1> Iterator<T1> of(Iterator<? extends T1> iterator){
+        if (iterator == null || !iterator.hasNext()) {
+            return EmptyIterator.of();
+        }
+        if (iterator instanceof UniqueIterator) {
+            return ObjectsUtil.cast(iterator);
+        }
+        return new UniqueIterator<>(iterator);
+    }
+    public static<T1> Iterator<T1> of(Iterator<? extends T1> iterator,  Predicate<? super T1> filter){
+        if (iterator == null || !iterator.hasNext()) {
+            return EmptyIterator.of();
+        }
+        if (filter == null) {
+            if (iterator instanceof UniqueIterator) {
+                return ObjectsUtil.cast(iterator);
+            }
+        }
+        return new UniqueIterator<>(iterator, filter);
     }
 }

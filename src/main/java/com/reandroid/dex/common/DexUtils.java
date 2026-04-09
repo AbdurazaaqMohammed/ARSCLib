@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import org.apache.commons.collections4.Transformer;
+import java.util.function.Function;
 
 public class DexUtils {
 
@@ -50,11 +50,11 @@ public class DexUtils {
     public static<T> Comparator<T> getDexPathComparator(){
         return DexUtils::compareDex;
     }
-    public static<T, E> Comparator<T> getDexPathComparator(Transformer<T, E> function){
+    public static<T, E> Comparator<T> getDexPathComparator(Function<T, E> function){
         return (dex1, dex2) -> compareDex(function, dex1, dex2);
     }
-    public static<T, E> int compareDex(Transformer<T, E> function, T dexPath1, T dexPath2){
-        return compareDex(function.transformer(dexPath1), function.transformer(dexPath2));
+    public static<T, E> int compareDex(Function<T, E> function, T dexPath1, T dexPath2){
+        return compareDex(function.apply(dexPath1), function.apply(dexPath2));
     }
     public static int compareDex(Object dexPath1, Object dexPath2){
         if(dexPath1 == dexPath2){
@@ -193,14 +193,17 @@ public class DexUtils {
                         continue;
                 }
             }
-            escapeChar(appendable, c);
-            if(!unicodeDetected && c != '\u2026' && c > 0xff) {
+            encodeToHexChar(appendable, c);
+            if(!unicodeDetected && c != '…' && c > 0xff) {
                 unicodeDetected = true;
             }
         }
         return unicodeDetected;
     }
     public static void appendCommentString(int maxLength, Appendable appendable, String text) throws IOException {
+        if (appendable == null) {
+            return;
+        }
         int length = NumbersUtil.min(maxLength, text.length());
         appendable.append('\'');
         for (int i = 0; i < length; i++) {
@@ -225,7 +228,7 @@ public class DexUtils {
             if(Character.isDefined(c) && !Character.isWhitespace(c)) {
                 appendable.append(c);
             } else {
-                escapeChar(appendable, c);
+                encodeToHexChar(appendable, c);
             }
         }
         appendable.append('\'');
@@ -268,15 +271,25 @@ public class DexUtils {
         }
 
         appendable.append('\'');
-        escapeChar(appendable, ch);
+        encodeToHexChar(appendable, ch);
         appendable.append('\'');
     }
-    private static void escapeChar(Appendable appendable, char c) throws IOException {
+    public static void encodeToHexChar(Appendable appendable, char c) throws IOException {
         appendable.append("\\u");
         appendable.append(Character.forDigit(c >> 12, 16));
         appendable.append(Character.forDigit((c >> 8) & 0x0f, 16));
         appendable.append(Character.forDigit((c >> 4) & 0x0f, 16));
         appendable.append(Character.forDigit(c & 0x0f, 16));
+    }
+    public static void encodeToHexChar(StringBuilder builder, char c) {
+        try {
+            encodeToHexChar((Appendable) builder, c);
+        } catch (IOException ignored) {}
+    }
+    public static String encodeToHexChar(char c) {
+        StringBuilder builder = new StringBuilder(6);
+        encodeToHexChar(builder, c);
+        return builder.toString();
     }
     /**
      * Use StringKey.decodeEscapedString

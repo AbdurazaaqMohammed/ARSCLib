@@ -27,19 +27,19 @@ import java.util.Iterator;
 public interface Key extends Comparable<Object>, SmaliFormat {
 
     default boolean uses(Key key) {
-        return this.equals(key) || CollectionUtil.contains(mentionedKeys(), key);
+        return this.equals(key) || CollectionUtil.contains(contents(), key);
     }
     default TypeKey getDeclaring() {
         return null;
     }
-    default Iterator<? extends Key> mentionedKeys() {
+    default Iterator<? extends Key> contents() {
         throw new RuntimeException("Method 'mentionedKeys()' Not implemented for: " + getClass());
+    }
+    default Object asObject() {
+        return this.toString();
     }
     default Key replaceKey(Key search, Key replace){
         return this;
-    }
-    default boolean isPrimitiveKey() {
-        return false;
     }
 
     default void append(SmaliWriter writer) throws IOException{
@@ -93,4 +93,5 @@ public interface Key extends Comparable<Object>, SmaliFormat {
     String DALVIK_accessFlags = ObjectsUtil.of("accessFlags");
     String DALVIK_name = ObjectsUtil.of("name");
     String DALVIK_value = ObjectsUtil.of("value");
+    String DALVIK_names = ObjectsUtil.of("names");
 }

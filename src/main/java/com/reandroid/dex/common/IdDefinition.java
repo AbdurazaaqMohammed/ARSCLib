@@ -25,14 +25,19 @@ import java.util.Iterator;
 public interface IdDefinition<T extends IdItem> extends AccessibleProgram, IdUsageIterator {
 
     T getId();
+    boolean isRemoved();
 
     @Override
     default boolean uses(Key key) {
+        if (key.equals(getKey())) {
+            return false;
+        }
         IdItem id = getId();
         Iterator<IdItem> iterator = usedIds();
         while (iterator.hasNext()) {
             IdItem idItem = iterator.next();
-            if (!id.equals(idItem) && key.equals(idItem.getKey())) {
+            Key idKey = idItem.getKey();
+            if (idKey != null && !id.equals(idItem) && idKey.uses(key)) {
                 return true;
             }
         }

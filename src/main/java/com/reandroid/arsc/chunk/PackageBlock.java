@@ -926,28 +926,34 @@ public class PackageBlock extends Chunk<PackageHeader>
             }
             int resourceId = encodeResult.value;
             int packageId = (resourceId >> 24) & 0xff;
+            PackageBlock packageBlock = this.packageBlock;
             int i = packageBlock.getId();
-            if(i == 0){
+            if (i == 0) {
                 packageBlock.setId(packageId);
-            }else if(i != packageId){
+            } else if (i != packageId) {
                 return;
             }
             int typeId = (resourceId >> 16) & 0xff;
-            if(typeId == 0){
+            if (typeId == 0) {
                 throw new XmlEncodeException("Type id is zero: '" + id + "', "
                         + element.getDebugText());
             }
             TypeString typeString = packageBlock.getOrCreateTypeString(typeId, type);
             typeId = typeString.getId();
-            TypeBlock typeBlock = packageBlock.getOrCreateTypeBlock((byte) typeId, "");
             int entryId = resourceId & 0xffff;
-            Entry entry = typeBlock.getOrCreateEntry((short) entryId);
-            entry.setName(name, true);
-            if(isInitializeIds() && typeBlock.isTypeId()){
-                entry.setValueAsBoolean(false);
-                ValueHeader header = entry.getHeader();
-                header.setPublic(true);
-                header.setWeak(true);
+            ResourceEntry resourceEntry = packageBlock.getResource(typeId, entryId);
+            if (resourceEntry != null && !resourceEntry.isEmpty()) {
+                resourceEntry.setName(name);
+            } else {
+                TypeBlock typeBlock = packageBlock.getOrCreateTypeBlock((byte) typeId, "");
+                Entry entry = typeBlock.getOrCreateEntry(entryId);
+                entry.setName(name, true);
+                if (isInitializeIds() && typeBlock.isTypeId()) {
+                    entry.setValueAsBoolean(false);
+                    ValueHeader header = entry.getHeader();
+                    header.setPublic(true);
+                    header.setWeak(true);
+                }
             }
         }
         private void parseResourcesAttributes(XmlPullParser parser) throws IOException, XmlPullParserException {

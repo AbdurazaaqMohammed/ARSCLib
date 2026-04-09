@@ -18,6 +18,7 @@ package com.reandroid.dex.smali.model;
 import com.reandroid.dex.common.AccessFlag;
 import com.reandroid.dex.common.Modifier;
 import com.reandroid.dex.key.MethodKey;
+import com.reandroid.dex.key.ProtoKey;
 import com.reandroid.dex.key.StringKey;
 import com.reandroid.dex.key.TypeKey;
 import com.reandroid.dex.key.TypeListKey;
@@ -40,7 +41,7 @@ public class SmaliClass extends SmaliDef implements ClassProgram {
     private final SmaliFieldSet  fields;
     private final SmaliMethodSet methods;
 
-    public SmaliClass(){
+    public SmaliClass() {
         super();
 
         this.interfaces = new SmaliInterfaceSet();
@@ -63,9 +64,9 @@ public class SmaliClass extends SmaliDef implements ClassProgram {
     }
     public void setKey(TypeKey key) {
         String name;
-        if(key != null){
+        if (key != null) {
             name = key.getTypeName();
-        }else {
+        } else {
             name = null;
         }
         setName(name);
@@ -103,30 +104,65 @@ public class SmaliClass extends SmaliDef implements ClassProgram {
     public TypeListKey getInterfacesKey() {
         return getInterfaces().getKey();
     }
-    public void setInterfaces(TypeListKey key){
+    public void setInterfaces(TypeListKey key) {
         getInterfaces().setKey(key);
     }
-    public boolean hasClassData(){
+    public boolean hasClassData() {
         return !fields.isEmpty() || !methods.isEmpty();
     }
     @Override
-    public Iterator<SmaliField> getStaticFields(){
+    public Iterator<SmaliField> getStaticFields() {
         return fields.getStaticFields();
     }
     @Override
-    public Iterator<SmaliField> getInstanceFields(){
+    public Iterator<SmaliField> getInstanceFields() {
         return fields.getInstanceFields();
     }
+    @Override
+    public Iterator<SmaliField> declaredFields() {
+        return fields.iterator();
+    }
+    @Override
+    public int getDeclaredFieldsCount() {
+        return fields.size();
+    }
+    @Override
+    public boolean hasDeclaredFields() {
+        return !fields.isEmpty();
+    }
+
     public void addFields(Iterator<SmaliField> iterator) {
         fields.addAll(iterator);
     }
     @Override
-    public Iterator<SmaliMethod> getDirectMethods(){
+    public Iterator<SmaliMethod> getDirectMethods() {
         return methods.getDirectMethods();
     }
     @Override
-    public Iterator<SmaliMethod> getVirtualMethods(){
+    public Iterator<SmaliMethod> getVirtualMethods() {
         return methods.getVirtualMethods();
+    }
+    @Override
+    public Iterator<SmaliMethod> declaredMethods() {
+        return methods.iterator();
+    }
+    @Override
+    public int getDeclaredMethodsCount() {
+        return methods.size();
+    }
+    @Override
+    public boolean hasDeclaredMethods() {
+        return !methods.isEmpty();
+    }
+
+    public SmaliMethod getDeclaredMethod(MethodKey methodKey) {
+        return this.methods.get(methodKey);
+    }
+    public SmaliMethod getDeclaredMethod(String name, ProtoKey protoKey) {
+        return this.methods.get(name, protoKey);
+    }
+    public SmaliMethod getDeclaredMethod(String name, TypeListKey parameters, TypeKey returnType) {
+        return this.methods.get(name, parameters, returnType);
     }
     public void addMethods(Iterator<SmaliMethod> iterator) {
         methods.addAll(iterator);
@@ -136,7 +172,7 @@ public class SmaliClass extends SmaliDef implements ClassProgram {
         Iterator<SmaliMethod> iterator = getDirectMethods();
         while (iterator.hasNext()) {
             SmaliMethod method = iterator.next();
-            if(method.isConstructor() && method.isStatic() &&
+            if (method.isConstructor() && method.isStatic() &&
                     MethodKey.CONSTRUCTOR_STATIC.equalsIgnoreDeclaring(method.getKey())) {
                 return method;
             }
@@ -164,15 +200,15 @@ public class SmaliClass extends SmaliDef implements ClassProgram {
         SmaliDirective.SUPER.append(writer);
         writer.appendOptional(getSuperClassKey());
         StringKey source = getSourceFileKey();
-        if(source != null){
+        if (source != null) {
             writer.newLine();
             SmaliDirective.SOURCE.append(writer);
             source.append(writer);
         }
         getInterfaces().append(writer);
-        if(hasAnnotation()){
-            writer.newLine(2);
-            writer.appendComment("annotations");
+        if (hasAnnotation()) {
+            writer.newLine();
+            writer.appendCommentNewLine("annotations");
             writer.appendAllWithDoubleNewLine(getAnnotationSet().iterator());
         }
         fields.append(writer);
@@ -184,8 +220,9 @@ public class SmaliClass extends SmaliDef implements ClassProgram {
         reader.skipWhitespacesOrComment();
         SmaliParseException.expect(reader, SmaliDirective.CLASS);
         setAccessFlags(AccessFlag.parse(reader));
+        setOrigin(reader.getCurrentOrigin(false));
         setKey(TypeKey.read(reader));
-        while (parseNext(reader)){
+        while (parseNext(reader)) {
             reader.skipWhitespacesOrComment();
         }
         reader.skipWhitespacesOrComment();
@@ -196,35 +233,35 @@ public class SmaliClass extends SmaliDef implements ClassProgram {
         fixUninitializedFinalFields();
     }
     private boolean parseNext(SmaliReader reader) throws IOException {
-        if(reader.finished()) {
+        if (reader.finished()) {
             return false;
         }
         reader.skipWhitespacesOrComment();
         SmaliDirective directive = SmaliDirective.parse(reader, false);
-        if(directive == SmaliDirective.CLASS){
+        if (directive == SmaliDirective.CLASS) {
             return false;
         }
-        if(directive == SmaliDirective.SUPER){
+        if (directive == SmaliDirective.SUPER) {
             parseSuper(reader);
             return true;
         }
-        if(directive == SmaliDirective.SOURCE){
+        if (directive == SmaliDirective.SOURCE) {
             parseSource(reader);
             return true;
         }
-        if(directive == SmaliDirective.ANNOTATION){
+        if (directive == SmaliDirective.ANNOTATION) {
             getOrCreateSmaliAnnotationSet().parse(reader);
             return true;
         }
-        if(directive == SmaliDirective.FIELD){
+        if (directive == SmaliDirective.FIELD) {
             fields.parse(reader);
             return true;
         }
-        if(directive == SmaliDirective.METHOD){
+        if (directive == SmaliDirective.METHOD) {
             methods.parse(reader);
             return true;
         }
-        if(directive == SmaliDirective.IMPLEMENTS){
+        if (directive == SmaliDirective.IMPLEMENTS) {
             interfaces.parse(reader);
             return true;
         }

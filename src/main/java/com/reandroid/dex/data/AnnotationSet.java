@@ -20,7 +20,11 @@ import com.reandroid.dex.base.PositionAlignedItem;
 import com.reandroid.dex.base.UsageMarker;
 import com.reandroid.dex.common.FullRefresh;
 import com.reandroid.dex.id.IdItem;
-import com.reandroid.dex.key.*;
+import com.reandroid.dex.key.AnnotationItemKey;
+import com.reandroid.dex.key.AnnotationSetKey;
+import com.reandroid.dex.key.Key;
+import com.reandroid.dex.key.KeyReference;
+import com.reandroid.dex.key.TypeKey;
 import com.reandroid.dex.program.AnnotatedProgram;
 import com.reandroid.dex.sections.Section;
 import com.reandroid.dex.sections.SectionType;
@@ -29,8 +33,9 @@ import com.reandroid.dex.smali.SmaliWriter;
 import com.reandroid.dex.smali.model.SmaliAnnotationItem;
 import com.reandroid.dex.smali.model.SmaliAnnotationSet;
 import com.reandroid.dex.value.DexValueBlock;
+import com.reandroid.utils.CompareUtil;
 import com.reandroid.utils.ObjectsUtil;
-import com.reandroid.utils.collection.CollectionUtil;
+import com.reandroid.utils.StringsUtil;
 import com.reandroid.utils.collection.FilterIterator;
 import com.reandroid.utils.collection.IterableIterator;
 
@@ -38,7 +43,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 
-public class AnnotationSet extends IntegerDataItemList<AnnotationItem>
+public class AnnotationSet extends AnnotationsList<AnnotationItem>
         implements KeyReference, SmaliFormat, PositionAlignedItem,
         FullRefresh, AnnotatedProgram {
 
@@ -62,8 +67,18 @@ public class AnnotationSet extends IntegerDataItemList<AnnotationItem>
 
     @Override
     public AnnotationSetKey getKey() {
-        AnnotationItemKey[] elements = new AnnotationItemKey[size()];
-        getItemKeys(elements);
+        AnnotationSetKey lastKey = getLastKey();
+        if (lastKey != null && equalsKey(lastKey)) {
+            return lastKey;
+        }
+        int size = size();
+        AnnotationItemKey[] elements;
+        if (size == 0) {
+            elements = null;
+        } else {
+            elements = new AnnotationItemKey[size];
+            getItemKeys(elements);
+        }
         return checkKey(AnnotationSetKey.of(elements));
     }
     @Override
@@ -88,7 +103,7 @@ public class AnnotationSet extends IntegerDataItemList<AnnotationItem>
     public AnnotationElement getElement(TypeKey typeKey, String name){
         AnnotationItem annotationItem = get(typeKey);
         if(annotationItem != null){
-            return annotationItem.getElement(name);
+            return annotationItem.get(name);
         }
         return null;
     }
@@ -132,13 +147,13 @@ public class AnnotationSet extends IntegerDataItemList<AnnotationItem>
     }
     private AnnotationItem addNew(TypeKey type, String name){
         AnnotationItem item = getOrCreate(type);
-        item.getOrCreateElement(name);
+        item.getOrCreate(name);
         return item;
     }
     public AnnotationItem get(TypeKey type, String name){
         for (AnnotationItem item : this) {
             if (type.equals(item.getType())
-                    && item.containsName(name)) {
+                    && item.contains(name)) {
                 return item;
             }
         }
@@ -170,7 +185,7 @@ public class AnnotationSet extends IntegerDataItemList<AnnotationItem>
         sort();
     }
     public boolean sort() {
-        return super.sort(CollectionUtil.getComparator());
+        return super.sort(CompareUtil.getComparableComparator());
     }
 
 
@@ -204,6 +219,15 @@ public class AnnotationSet extends IntegerDataItemList<AnnotationItem>
         }
         return null;
     }
+    @Override
+    public Key getAnnotationValue(TypeKey typeKey, String name) {
+        DexValueBlock<?> value = getValue(typeKey, name);
+        if (value != null) {
+            return value.getKey();
+        }
+        return null;
+    }
+
     @Override
     public boolean removeAnnotation(TypeKey typeKey) {
         return remove(typeKey);
@@ -244,25 +268,17 @@ public class AnnotationSet extends IntegerDataItemList<AnnotationItem>
     public void append(SmaliWriter writer) throws IOException {
         writer.appendAllWithDoubleNewLine(iterator());
     }
+
     @Override
     public String toString() {
-        if(getOffsetReference() == null){
+        if (getOffsetReference() == null) {
             return super.toString();
         }
         int size = size();
-        if(size == 0){
-            return "EMPTY";
+        if (size == 0) {
+            return "@EMPTY";
         }
-        StringBuilder builder = new StringBuilder();
-        boolean appendOnce = false;
-        for(AnnotationItem item : this){
-            if(appendOnce){
-                builder.append(',');
-            }
-            builder.append(item);
-            appendOnce = true;
-        }
-        return builder.toString();
+        return StringsUtil.join(iterator(), ", ");
     }
     public static class EmptyAnnotationSet extends AnnotationSet{
 

@@ -15,13 +15,18 @@
  */
 package com.reandroid.dex.smali.formatters;
 
-import com.reandroid.dex.ins.Label;
+import com.reandroid.dex.program.InstructionLabel;
 import com.reandroid.utils.CompareUtil;
 import com.reandroid.utils.HexUtil;
 import com.reandroid.utils.collection.ArrayCollection;
 import com.reandroid.utils.collection.CollectionUtil;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SequentialLabelFactory {
 
@@ -31,7 +36,7 @@ public class SequentialLabelFactory {
         this.labelMap = new HashMap<>();
     }
 
-    public void build(Iterator<? extends Label> iterator) {
+    public void build(Iterator<? extends InstructionLabel> iterator) {
         reset();
         Map<String, Set<String>> groupMap = new HashMap<>();
         while (iterator.hasNext()) {

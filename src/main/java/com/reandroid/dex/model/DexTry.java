@@ -73,7 +73,7 @@ public class DexTry extends DexCode {
                     int address = ins.getAddress();
                     return address >= getStartAddress() && address < getEndAddress();
                 });
-        return DexInstruction.create(getDexMethod(), iterator);
+        return DexInstruction.createAll(getDexMethod(), iterator);
     }
     public int getStartAddress(){
         return getTryItem().getStartAddress();
@@ -125,6 +125,10 @@ public class DexTry extends DexCode {
         return ComputeIterator.of(getTryItem().getExceptionHandlersForAddress(address),
                 this::create);
     }
+    public Iterator<DexCatch> getCatchesAt(int address) {
+        return ComputeIterator.of(getTryItem().getExceptionHandlersForCatchAddress(address),
+                this::create);
+    }
     public boolean trapsCatchAll() {
         return traps(null, this.address);
     }
@@ -147,6 +151,12 @@ public class DexTry extends DexCode {
     public void removeSelf(){
         getTryItem().removeSelf();
     }
+    @Override
+    public boolean isRemoved() {
+        return getDexMethod().isRemoved() ||
+                getTryItem().isRemoved();
+    }
+
     public TryItem getTryItem() {
         return tryItem;
     }
@@ -179,12 +189,12 @@ public class DexTry extends DexCode {
         Object previous = null;
         while (handlers.hasNext()){
             ExceptionLabel label = handlers.next().getStartLabel();
-            if(label.isEqualExtraLine(previous)){
+            if(label.equalsLabel(previous)){
                 continue;
             }
             previous = label;
             writer.newLine();
-            label.appendExtra(writer);
+            label.appendLabelName(writer);
         }
         writer.indentPlus();
         Iterator<DexInstruction> instructions = getInstructions();
@@ -194,18 +204,18 @@ public class DexTry extends DexCode {
         previous = null;
         while (handlers.hasNext()){
             ExceptionLabel label = handlers.next().getEndLabel();
-            if(label.isEqualExtraLine(previous)){
+            if(label.equalsLabel(previous)){
                 continue;
             }
             previous = label;
             writer.newLine();
-            label.appendExtra(writer);
+            label.appendLabelName(writer);
         }
         handlers = tryItem.getExceptionHandlers();
         while (handlers.hasNext()){
             ExceptionLabel label = handlers.next().getHandlerLabel();
             writer.newLine();
-            label.appendExtra(writer);
+            label.appendLabelName(writer);
         }
     }
 

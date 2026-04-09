@@ -37,6 +37,10 @@ public class TypeList extends ShortIdList<TypeId> implements KeyReference, Posit
 
     @Override
     public TypeListKey getKey() {
+        TypeListKey lastKey = getLastKey();
+        if (lastKey != null && equalsKey(lastKey)) {
+            return lastKey;
+        }
         TypeKey[] elements = new TypeKey[size()];
         getItemKeys(elements);
         return checkKey(TypeListKey.create(elements));
@@ -103,12 +107,11 @@ public class TypeList extends ShortIdList<TypeId> implements KeyReference, Posit
     public void appendInterfaces(SmaliWriter writer) throws IOException {
         SmaliDirective smaliDirective = null;
         for(TypeId typeId : this){
-            writer.newLine();
             if(smaliDirective == null){
-                writer.appendComment("interfaces");
-                writer.newLine();
+                writer.appendCommentNewLine("interfaces");
                 smaliDirective = SmaliDirective.IMPLEMENTS;
             }
+            writer.newLine();
             smaliDirective.append(writer);
             typeId.append(writer);
         }
