@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Type;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class TypeKey implements TypeDescriptorKey, ProgramKey {
 
@@ -105,7 +105,7 @@ public class TypeKey implements TypeDescriptorKey, ProgramKey {
         }
         if (platformPredicate != null) {
             TypeKey typeKey = i == 0 ? this : new TypeKey(name.substring(i));
-            if (platformPredicate.test(typeKey)) {
+            if (platformPredicate.evaluate(typeKey)) {
                 builder.append(typeKey.getTypeName());
                 return;
             }
@@ -598,7 +598,13 @@ public class TypeKey implements TypeDescriptorKey, ProgramKey {
         if (type instanceof Class<?>) {
             return convert((Class<?>) type);
         }
-        String name = dropSourceSignatures(type.getTypeName());
+        String name;
+
+        try {
+            name = dropSourceSignatures(type.getTypeName());
+        } catch (Exception e) {
+            name = dropSourceSignatures(type.toString());
+        }
         if (name.charAt(0) == '[') {
             return create(name.replace('.', '/'));
         }

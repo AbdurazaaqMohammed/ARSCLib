@@ -57,8 +57,8 @@ import com.reandroid.utils.collection.CollectionUtil;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Transformer;
+import org.apache.commons.collections4.Predicate;
 
 
 public abstract class SectionType<T extends SectionItem> implements Creator<T> {
@@ -783,11 +783,11 @@ public abstract class SectionType<T extends SectionItem> implements Creator<T> {
     public static Iterator<SectionType<?>> getSectionTypes(){
         return new ArrayIterator<>(R8_ORDER);
     }
-    public static<T1> Comparator<T1> getReadComparator(Function<? super T1, SectionType<?>> function){
-        return comparator(READ_ORDER, function);
+    public static<T1> Comparator<T1> getReadComparator(Transformer<? super T1, SectionType<?>> transformer){
+        return comparator(READ_ORDER, transformer);
     }
-    public static<T1> Comparator<T1> comparator(SectionType<?>[] sortOrder, Function<? super T1, SectionType<?>> function){
-        return new OrderBasedComparator<>(sortOrder, function);
+    public static<T1> Comparator<T1> comparator(SectionType<?>[] sortOrder, Transformer<? super T1, SectionType<?>> transformer){
+        return new OrderBasedComparator<>(sortOrder, transformer);
     }
     public static SectionType<?>[] getR8Order() {
         return R8_ORDER.clone();
@@ -850,12 +850,12 @@ public abstract class SectionType<T extends SectionItem> implements Creator<T> {
 
 
     static class OrderBasedComparator<T1> implements Comparator<T1> {
-        private final Function<? super T1, SectionType<?>> function;
+        private final Transformer<? super T1, SectionType<?>> transformer;
         private final SectionType<?>[] sortOrder;
 
-        public OrderBasedComparator(SectionType<?>[] sortOrder, Function<? super T1, SectionType<?>> function){
+        public OrderBasedComparator(SectionType<?>[] sortOrder, Transformer<? super T1, SectionType<?>> transformer){
             this.sortOrder = sortOrder;
-            this.function = function;
+            this.transformer = transformer;
         }
         private int getOrder(SectionType<?> sectionType){
             SectionType<?>[] sortOrder = this.sortOrder;
@@ -871,7 +871,7 @@ public abstract class SectionType<T extends SectionItem> implements Creator<T> {
             if(item == null){
                 return this.sortOrder.length - 1;
             }
-            return getOrder(this.function.apply(item));
+            return getOrder(this.transformer.transform(item));
         }
         @Override
         public int compare(T1 item1, T1 item2) {

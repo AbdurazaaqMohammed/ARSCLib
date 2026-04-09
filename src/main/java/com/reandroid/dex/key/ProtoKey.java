@@ -10,7 +10,7 @@ import com.reandroid.utils.collection.SingleIterator;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class ProtoKey implements ProtoDescriptorKey {
 

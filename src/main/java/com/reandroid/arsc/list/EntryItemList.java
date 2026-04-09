@@ -31,7 +31,7 @@ import com.reandroid.json.JSONObject;
 import com.reandroid.utils.CompareUtil;
 
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class EntryItemList extends OffsetBlockList<Entry> implements JSONConvert<JSONArray> {
 

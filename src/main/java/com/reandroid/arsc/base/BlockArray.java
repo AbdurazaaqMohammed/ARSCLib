@@ -23,7 +23,7 @@ import com.reandroid.utils.collection.FilterIterator;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public abstract class BlockArray<T extends Block> extends BlockList<T>
         implements Creator<T>, ArraySupplier<T> {

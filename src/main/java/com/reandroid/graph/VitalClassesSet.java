@@ -40,9 +40,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.collections4.Predicate;
 
-
-public class VitalClassesSet extends BaseApkModuleProcessor implements org.apache.commons.collections4.Predicate<TypeKey> {
+public class VitalClassesSet extends BaseApkModuleProcessor implements Predicate<TypeKey> {
 
     private final ApkBuildOption buildOption;
     private final Set<TypeKey> mainClasses;
@@ -233,7 +233,7 @@ public class VitalClassesSet extends BaseApkModuleProcessor implements org.apach
     private void scanRequiredByUser() {
         keepClasses(getBuildOption().getKeepClasses());
     }
-    public void keepClasses(org.apache.commons.collections4.Predicate<? super TypeKey> filter) {
+    public void keepClasses(Predicate<? super TypeKey> filter) {
         if(filter == null) {
             return;
         }

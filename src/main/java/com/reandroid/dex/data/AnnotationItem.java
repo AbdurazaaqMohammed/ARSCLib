@@ -46,7 +46,7 @@ import com.reandroid.utils.collection.IterableIterator;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class AnnotationItem extends DataItem
         implements Comparable<AnnotationItem>, Iterable<AnnotationElement>,
@@ -439,7 +439,7 @@ public class AnnotationItem extends DataItem
         @Override
         public boolean removeAnnotationIf(Predicate<? super AnnotationItemKey> predicate) {
             AnnotationItemKey itemKey = getItemKey();
-            if (itemKey != null && predicate.test(itemKey)) {
+            if (itemKey != null && predicate.evaluate(itemKey)) {
                 clearAnnotations();
                 return true;
             }

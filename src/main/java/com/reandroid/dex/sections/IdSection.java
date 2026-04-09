@@ -22,7 +22,7 @@ import com.reandroid.dex.key.Key;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
+import org.apache.commons.collections4.Predicate;
 
 public class IdSection<T extends IdItem> extends Section<T> {
 

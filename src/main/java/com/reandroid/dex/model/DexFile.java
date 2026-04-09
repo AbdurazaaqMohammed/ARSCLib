@@ -28,9 +28,10 @@ import com.reandroid.utils.collection.IterableIterator;
 import com.reandroid.utils.io.FileUtil;
 
 import java.io.*;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayout> {
 
@@ -347,7 +348,7 @@ public class DexFile implements Closeable, DexClassRepository, Iterable<DexLayou
         if (results.isEmpty()) {
             return null;
         }
-        results.sort(CompareUtil.getToStringComparator());
+        Collections.sort(results, CompareUtil.getToStringComparator());
         return results;
     }
     private boolean isLayoutDirectory(File dir) {

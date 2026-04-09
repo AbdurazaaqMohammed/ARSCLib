@@ -5,8 +5,6 @@
 */
 package com.reandroid.json;
 
-import com.reandroid.utils.StringsUtil;
-
 import java.util.Locale;
 
 public class HTTP {
@@ -20,7 +18,7 @@ public class HTTP {
         String         token;
 
         token = x.nextToken();
-        if (StringsUtil.toUpperCaseWithLocale(token).startsWith("HTTP")) {
+        if (token.toUpperCase(Locale.ROOT).startsWith("HTTP")) {
 
 // Response
 

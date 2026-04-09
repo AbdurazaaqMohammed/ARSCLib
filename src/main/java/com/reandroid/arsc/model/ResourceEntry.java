@@ -34,7 +34,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
-
+import org.apache.commons.collections4.Predicate;
 
 public class ResourceEntry implements Iterable<Entry> {
 
@@ -337,7 +337,7 @@ public class ResourceEntry implements Iterable<Entry> {
     public Iterator<Entry> iterator(boolean skipNull) {
         return getPackageBlock().getEntries(getResourceId(), skipNull);
     }
-    public Iterator<Entry> iterator(org.apache.commons.collections4.Predicate<? super Entry> filter) {
+    public Iterator<Entry> iterator(Predicate<? super Entry> filter) {
         return new FilterIterator<>(getPackageBlock().getEntries(getResourceId()), filter);
     }
     public Iterator<ResConfig> getConfigs() {

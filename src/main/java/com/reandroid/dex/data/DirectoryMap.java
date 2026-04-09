@@ -26,7 +26,7 @@ import com.reandroid.utils.collection.ComputeIterator;
 import com.reandroid.utils.collection.FilterIterator;
 
 import java.util.Iterator;
-
+import org.apache.commons.collections4.Predicate;
 
 public class DirectoryMap<DEFINITION extends DefIndex, VALUE extends AnnotationsList<?>>
         extends CountedBlockList<DirectoryEntry<DEFINITION, VALUE>>

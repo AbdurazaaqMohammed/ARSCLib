@@ -37,7 +37,7 @@ public interface SmaliComment {
         List<TypeKey> typeKeyList = CollectionUtil.toList(
                 ComputeIterator.of(iterator, DexDeclaration::getDefining));
 
-        Collections.sort( typeKeyList, CompareUtil.getComparableComparator());
+        Collections.sort(typeKeyList, CompareUtil.getComparableComparator());
 
         int size = typeKeyList.size();
         int remaining = 0;

@@ -5,8 +5,6 @@
 */
 package com.reandroid.json;
 
-import com.reandroid.utils.StringsUtil;
-
 import java.util.Locale;
 
 public class Cookie {
@@ -50,7 +48,7 @@ public class Cookie {
         x.next();
         // parse the remaining cookie attributes
         while (x.more()) {
-            name = StringsUtil.toLowerCaseWithLocale(unescape(x.nextTo("=;")).trim());
+            name = unescape(x.nextTo("=;")).trim().toLowerCase(Locale.ROOT);
             // don't allow a cookies attributes to overwrite it's name or value.
             if("name".equalsIgnoreCase(name)) {
                 throw new JSONException("Illegal attribute name: 'name'");

@@ -16,7 +16,6 @@
 package com.reandroid.arsc.coder.xml;
 
 import com.reandroid.arsc.item.StringItem;
-import com.reandroid.utils.StringsUtil;
 import com.reandroid.xml.StyleDocument;
 import com.reandroid.xml.StyleText;
 import com.reandroid.xml.XMLUtil;
@@ -58,7 +57,7 @@ public class AaptXmlStringDecoder implements XmlStringDecoder {
 
     // Copied from github.com/iBotPeaches/Apktool
     public static String escapeXmlValue(String str) {
-        if (StringsUtil.isEmpty(str)) {
+        if (str == null || str.isEmpty()) {
             return str;
         }
 

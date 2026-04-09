@@ -30,7 +30,7 @@ import com.reandroid.utils.ObjectsUtil;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class Section<T extends SectionItem>  extends FixedDexContainer
         implements DexArraySupplier<T>, OffsetSupplier,

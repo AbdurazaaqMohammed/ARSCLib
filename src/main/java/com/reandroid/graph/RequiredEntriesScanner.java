@@ -31,7 +31,7 @@ import com.reandroid.utils.collection.FilterIterator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
+import org.apache.commons.collections4.Predicate;
 
 public class RequiredEntriesScanner extends BaseApkModuleProcessor{
 
@@ -67,7 +67,7 @@ public class RequiredEntriesScanner extends BaseApkModuleProcessor{
     }
 
     private void scanUserConfigs() {
-        org.apache.commons.collections4.Predicate<? super ResourceName> filter = buildOption.getResourceMergeOption()
+        Predicate<? super ResourceName> filter = buildOption.getResourceMergeOption()
                 .getKeepResourceName();
         if(filter == null) {
             return;

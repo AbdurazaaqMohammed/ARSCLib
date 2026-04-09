@@ -25,7 +25,7 @@ import com.reandroid.graph.ApkBuildOption;
 
 import java.util.Iterator;
 import java.util.List;
-
+import org.apache.commons.collections4.Predicate;
 
 public abstract class UnusedClassComponentCleaner<T extends Dex> extends UnusedCleaner<T> {
 
@@ -73,7 +73,7 @@ public abstract class UnusedClassComponentCleaner<T extends Dex> extends UnusedC
         if(dexClass.usesNative() || dexClass.isEnum()) {
             return false;
         }
-        org.apache.commons.collections4.Predicate<? super TypeKey> filter = getBuildOption().getKeepClasses();
+        Predicate<? super TypeKey> filter = getBuildOption().getKeepClasses();
         if(filter != null && filter.evaluate(dexClass.getKey())) {
             return false;
         }

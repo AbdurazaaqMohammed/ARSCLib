@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class AccessFlag extends Modifier {
 

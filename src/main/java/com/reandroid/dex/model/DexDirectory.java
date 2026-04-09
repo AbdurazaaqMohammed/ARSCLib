@@ -45,7 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
+import org.apache.commons.collections4.Predicate;
 
 public class DexDirectory implements Iterable<DexFile>, Closeable,
         DexClassRepository, FullRefresh {
@@ -679,7 +679,7 @@ public class DexDirectory implements Iterable<DexFile>, Closeable,
     public void writeSmali(SmaliWriterSetting writerSetting, File root,
                            Predicate<? super DexFile> predicate) throws IOException {
         for (DexFile dexFile : this) {
-            if (predicate == null || predicate.test(dexFile)) {
+            if (predicate == null || predicate.evaluate(dexFile)) {
                 File dir = new File(root, dexFile.buildSmaliDirectoryName());
                 dexFile.writeSmali(writerSetting, dir);
             }
@@ -694,7 +694,7 @@ public class DexDirectory implements Iterable<DexFile>, Closeable,
     public static DexDirectory fromZip(ZipEntryMap zipEntryMap) throws IOException {
         return fromZip(zipEntryMap, null);
     }
-    public static DexDirectory fromZip(ZipEntryMap zipEntryMap, org.apache.commons.collections4.Predicate<SectionType<?>> readFilter) throws IOException {
+    public static DexDirectory fromZip(ZipEntryMap zipEntryMap, Predicate<SectionType<?>> readFilter) throws IOException {
         DexDirectory dexDirectory = new DexDirectory();
         DexFileSourceSet sourceSet = dexDirectory.getDexSourceSet();
         sourceSet.setReadFilter(readFilter);
@@ -702,7 +702,7 @@ public class DexDirectory implements Iterable<DexFile>, Closeable,
         dexDirectory.updateDexFileList();
         return dexDirectory;
     }
-    public static DexDirectory fromDexFilesDirectory(File dir, org.apache.commons.collections4.Predicate<SectionType<?>> readFilter) throws IOException {
+    public static DexDirectory fromDexFilesDirectory(File dir, Predicate<SectionType<?>> readFilter) throws IOException {
         DexDirectory dexDirectory = new DexDirectory();
         DexFileSourceSet sourceSet = dexDirectory.getDexSourceSet();
         sourceSet.setReadFilter(readFilter);

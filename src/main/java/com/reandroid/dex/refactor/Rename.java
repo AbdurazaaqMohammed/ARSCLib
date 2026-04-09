@@ -32,6 +32,7 @@ import com.reandroid.utils.collection.CollectionUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -241,7 +242,7 @@ public abstract class Rename<T extends Key>
     public List<KeyPair<T, T>> toList(Comparator<KeyPair<? super T, ? super T>> comparator) {
         List<KeyPair<T, T>> results = new ArrayCollection<>(getKeyPairSet());
         if (comparator != null) {
-            java.util.Collections.sort(results, comparator);
+            Collections.sort(results, comparator);
         }
         return results;
     }

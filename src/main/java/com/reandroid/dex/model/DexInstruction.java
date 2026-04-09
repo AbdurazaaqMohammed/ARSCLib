@@ -54,7 +54,7 @@ import com.reandroid.utils.collection.LinkedIterator;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class DexInstruction extends DexCode implements Instruction {
 
@@ -663,7 +663,7 @@ public class DexInstruction extends DexCode implements Instruction {
     }
     public boolean hasTargetingInstructionsIfOpcode(Predicate<Opcode<?>> predicate) {
         return FilterIterator.of(getIns().getForcedReferencingLabels(Ins.class),
-                ins -> predicate.test(ins.getOpcode())).hasNext();
+                ins -> predicate.evaluate(ins.getOpcode())).hasNext();
     }
     public Iterator<DexInstruction> getTargetingInstructions() {
         return DexInstruction.createAll(getDexMethod(),
@@ -674,7 +674,7 @@ public class DexInstruction extends DexCode implements Instruction {
         if (!iterator.hasNext()) {
             return EmptyIterator.of();
         }
-        iterator = FilterIterator.of(iterator, ins -> predicate.test(ins.getOpcode()));
+        iterator = FilterIterator.of(iterator, ins -> predicate.evaluate(ins.getOpcode()));
         return DexInstruction.createAll(getDexMethod(), iterator);
     }
     // for switch payload instruction
@@ -821,7 +821,7 @@ public class DexInstruction extends DexCode implements Instruction {
                 for (int i = 0; i < size; i++) {
                     if (register == previous.getRegister(i) &&
                             RegisterType.READ.is(registerFormat.get(i))) {
-                        if (predicate.test(previous)) {
+                        if (predicate.evaluate(previous)) {
                             return previous;
                         }
                         return null;
@@ -850,7 +850,7 @@ public class DexInstruction extends DexCode implements Instruction {
                 for (int i = 0; i < size; i++) {
                     if (register == previous.getRegister(i) &&
                             RegisterType.WRITE.is(format.get(i))) {
-                        if (predicate.test(previous)) {
+                        if (predicate.evaluate(previous)) {
                             return previous;
                         }
                         return null;

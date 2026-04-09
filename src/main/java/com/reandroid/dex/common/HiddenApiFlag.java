@@ -26,7 +26,7 @@ import com.reandroid.utils.collection.SingleIterator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class HiddenApiFlag extends Modifier implements SmaliFormat {
 

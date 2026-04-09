@@ -24,7 +24,7 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public abstract class XMLNodeTree extends XMLNode implements
         NodeTree<XMLNode>, Iterable<XMLNode>, SizedSupplier<XMLNode> {

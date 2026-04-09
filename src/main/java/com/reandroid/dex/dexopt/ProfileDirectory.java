@@ -30,9 +30,10 @@ import com.reandroid.utils.io.FileUtil;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class ProfileDirectory implements LinkableProfileItem, Closeable {
 
@@ -382,7 +383,7 @@ public class ProfileDirectory implements LinkableProfileItem, Closeable {
     private static List<InputSource> listDexFiles(ZipEntryMap zipEntryMap) {
         List<InputSource> results = CollectionUtil.toList(zipEntryMap.iteratorWithPath(
                 path -> DexFile.getDexFileNumber(path) >= 0));
-        results.sort((i1, i2) -> CompareUtil.compare(DexFile.getDexFileNumber(i1.getAlias()),
+        Collections.sort(results, (i1, i2) -> CompareUtil.compare(DexFile.getDexFileNumber(i1.getAlias()),
                 DexFile.getDexFileNumber(i2.getAlias())));
         return results;
     }

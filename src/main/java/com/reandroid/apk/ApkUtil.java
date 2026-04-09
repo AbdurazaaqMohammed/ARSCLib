@@ -17,18 +17,17 @@ package com.reandroid.apk;
 
 import com.reandroid.arsc.chunk.PackageBlock;
 import com.reandroid.utils.CompareUtil;
-import com.reandroid.utils.StringsUtil;
-import com.reandroid.utils.collection.CollectionUtil;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ApkUtil {
     public static String replaceRootDir(String path, String dirName){
         int i=path.indexOf('/')+1;
         path=path.substring(i);
-        if(!StringsUtil.isEmpty(dirName)){
+        if(dirName != null && dirName.length()>0){
             if(!dirName.endsWith("/")){
                 dirName=dirName+"/";
             }
@@ -105,7 +104,7 @@ public class ApkUtil {
                 results.add(dir);
             }
         }
-        java.util.Collections.sort(results, CompareUtil.getComparableComparator());
+        Collections.sort(results, CompareUtil.getComparableComparator());
         return results;
     }
     public static List<File> listPublicXmlFiles(File resourcesDirectory){
@@ -123,7 +122,7 @@ public class ApkUtil {
                 }
             }
         }
-        java.util.Collections.sort(results, CompareUtil.getComparableComparator());
+        Collections.sort(results, CompareUtil.getComparableComparator());
         return results;
     }
     private static File getPublicXmlFile(File resDir){
@@ -160,7 +159,7 @@ public class ApkUtil {
                 results.add(dir);
             }
         }
-        java.util.Collections.sort(results, CompareUtil.getComparableComparator());
+        Collections.sort(results, CompareUtil.getComparableComparator());
         return results;
     }
     public static boolean isValuesDirectoryName(String name, boolean checkVariant){

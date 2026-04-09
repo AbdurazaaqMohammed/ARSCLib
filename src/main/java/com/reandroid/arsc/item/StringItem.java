@@ -37,7 +37,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class StringItem extends StringBlock implements JSONConvert<JSONObject>, Comparable<StringItem> {
 
@@ -64,7 +64,7 @@ public class StringItem extends StringBlock implements JSONConvert<JSONObject>, 
                                                  Predicate<T> resultFilter) {
         return ComputeIterator.of(getReferences(), referenceItem -> {
             T result = referenceItem.getReferredParent(parentClass);
-            if (result == null || resultFilter != null && !resultFilter.test(result)) {
+            if (result == null || resultFilter != null && !resultFilter.evaluate(result)) {
                 result = null;
             }
             return result;

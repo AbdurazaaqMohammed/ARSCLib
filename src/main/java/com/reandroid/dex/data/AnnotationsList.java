@@ -29,7 +29,7 @@ import com.reandroid.utils.collection.ComputeIterator;
 
 import java.util.Comparator;
 import java.util.Iterator;
-
+import org.apache.commons.collections4.Predicate;
 
 public abstract class AnnotationsList<T extends DataItem> extends DataItem implements Iterable<T> {
 
@@ -139,7 +139,7 @@ public abstract class AnnotationsList<T extends DataItem> extends DataItem imple
     public void remove(T item) {
         removeIf(t -> t == item);
     }
-    public boolean removeIf(org.apache.commons.collections4.Predicate<? super T> filter) {
+    public boolean removeIf(Predicate<? super T> filter) {
         return referenceList.removeIf(reference -> filter.evaluate(reference.getItem()));
     }
     void removeNulls() {

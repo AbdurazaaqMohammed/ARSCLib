@@ -99,13 +99,13 @@ public class GroupMap<K, V> {
         return (V) obj;
     }
 
-    public void putAll(Collection<? extends V> collection, Transformer<? super V, K> function){
+    public void putAll(Collection<? extends V> collection, Transformer<? super V, K> transformer){
         if(collection.isEmpty()){
             return;
         }
         initializeEmpty(collection.size());
         for(V value : collection){
-            put(function.transformer(value), value);
+            put(transformer.transform(value), value);
         }
     }
     @SuppressWarnings("unchecked")

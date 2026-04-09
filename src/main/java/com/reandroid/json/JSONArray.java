@@ -6,7 +6,6 @@
 package com.reandroid.json;
 
 import com.reandroid.common.FileChannelInputStream;
-import com.reandroid.utils.collection.CollectionUtil;
 
 import java.io.*;
 import java.lang.reflect.Array;

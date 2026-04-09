@@ -50,7 +50,7 @@ import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class DexClass extends DexDeclaration implements ClassProgram, Comparable<DexClass> {
 
@@ -100,7 +100,7 @@ public class DexClass extends DexDeclaration implements ClassProgram, Comparable
         while (iterator.hasNext()) {
             TypeKey typeKey = iterator.next();
             typeKey = typeKey.getDeclaring();
-            if (exclude != null && !exclude.test(typeKey)) {
+            if (exclude != null && !exclude.evaluate(typeKey)) {
                 continue;
             }
             DexClass dexClass = dexClassRepository.getDexClass(typeKey);

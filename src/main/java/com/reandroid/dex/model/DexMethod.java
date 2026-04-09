@@ -46,7 +46,7 @@ import com.reandroid.utils.collection.MergingIterator;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class DexMethod extends DexDeclaration implements MethodProgram, BlockRefresh {
 
@@ -190,41 +190,41 @@ public class DexMethod extends DexDeclaration implements MethodProgram, BlockRef
     public Iterator<DexInstruction> getInstructionsIfKey(Predicate<? super Key> predicate) {
         return getInstructionsIfIns(ins -> {
             if (ins instanceof SizeXIns) {
-                return predicate.test(((SizeXIns) ins).getKey());
+                return predicate.evaluate(((SizeXIns) ins).getKey());
             }
             return false;
         });
     }
-    public Iterator<DexInstruction> getInstructionsIfMethodKey(Predicate<? super MethodKey> predicate) {
+    public Iterator<DexInstruction> getInstructionsIfMethodKey(org.apache.commons.collections4.Predicate<? super MethodKey> predicate) {
         return getInstructionsIfIns(ins -> {
             if (ins instanceof SizeXIns) {
                 Key key = ((SizeXIns) ins).getKey();
                 if (key instanceof MethodKey) {
-                    return predicate.test((MethodKey) key);
+                    return predicate.evaluate((MethodKey) key);
                 }
                 return false;
             }
             return false;
         });
     }
-    public Iterator<DexInstruction> getInstructionsIfFieldKey(Predicate<? super FieldKey> predicate) {
+    public Iterator<DexInstruction> getInstructionsIfFieldKey(org.apache.commons.collections4.Predicate<? super FieldKey> predicate) {
         return getInstructionsIfIns(ins -> {
             if (ins instanceof SizeXIns) {
                 Key key = ((SizeXIns) ins).getKey();
                 if (key instanceof FieldKey) {
-                    return predicate.test((FieldKey) key);
+                    return predicate.evaluate((FieldKey) key);
                 }
                 return false;
             }
             return false;
         });
     }
-    public Iterator<DexInstruction> getInstructionsIfTypeKey(Predicate<? super TypeKey> predicate) {
+    public Iterator<DexInstruction> getInstructionsIfTypeKey(org.apache.commons.collections4.Predicate<? super TypeKey> predicate) {
         return getInstructionsIfIns(ins -> {
             if (ins instanceof SizeXIns) {
                 Key key = ((SizeXIns) ins).getKey();
                 if (key instanceof TypeKey) {
-                    return predicate.test((TypeKey) key);
+                    return predicate.evaluate((TypeKey) key);
                 }
                 return false;
             }
@@ -236,7 +236,7 @@ public class DexMethod extends DexDeclaration implements MethodProgram, BlockRef
             if (ins instanceof SizeXIns) {
                 Key key = ((SizeXIns) ins).getKey();
                 if (key instanceof StringKey) {
-                    return predicate.test((StringKey) key);
+                    return predicate.evaluate((StringKey) key);
                 }
                 return false;
             }
@@ -257,7 +257,7 @@ public class DexMethod extends DexDeclaration implements MethodProgram, BlockRef
         return getInstructionsIfOpcode(op -> op == opcode || op == alt);
     }
     public Iterator<DexInstruction> getInstructionsIfOpcode(Predicate<Opcode<?>> predicate) {
-        return getInstructionsIfIns(ins -> predicate.test(ins.getOpcode()));
+        return getInstructionsIfIns(ins -> predicate.evaluate(ins.getOpcode()));
     }
     /**
      * Use: getInstructionsIfIns

@@ -24,7 +24,7 @@ import com.reandroid.utils.StringsUtil;
 import com.reandroid.utils.collection.ComputeIterator;
 
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public abstract class ProfileBody extends DeflatedBlockContainer
         implements LinkableProfileItem, JSONConvert<JSONArray> {

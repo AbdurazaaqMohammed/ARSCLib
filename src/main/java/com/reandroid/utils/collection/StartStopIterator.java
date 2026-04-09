@@ -19,7 +19,7 @@ import com.reandroid.utils.ObjectsUtil;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class StartStopIterator<T> implements Iterator<T> {
 
@@ -75,7 +75,7 @@ public class StartStopIterator<T> implements Iterator<T> {
                 continue;
             }
             if (!started) {
-                if (predicate.test(next)) {
+                if (predicate.evaluate(next)) {
                     mStarted = true;
                 } else {
                     continue;
@@ -84,7 +84,7 @@ public class StartStopIterator<T> implements Iterator<T> {
             break;
         }
         predicate = this.stopPredicate;
-        if (next == null || (predicate != null && predicate.test(next))) {
+        if (next == null || (predicate != null && predicate.evaluate(next))) {
             mStopped = true;
             if (excludeStop) {
                 next = null;

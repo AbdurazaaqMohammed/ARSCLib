@@ -23,6 +23,7 @@ import com.reandroid.utils.collection.ArrayCollection;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class FileUtil {
                 }
             }
         }
-        results.sort(((file1, file2) -> CompareUtil.compare(
+        Collections.sort(results, ((file1, file2) -> CompareUtil.compare(
                 getClassesDexNumber(file1),
                 getClassesDexNumber(file2))));
         return results;

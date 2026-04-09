@@ -17,7 +17,6 @@ package com.reandroid.archive.block;
 
 import com.reandroid.archive.ZipSignature;
 import com.reandroid.utils.HexUtil;
-import com.reandroid.utils.StringsUtil;
 import com.reandroid.utils.io.FilePermissions;
 
 import java.io.IOException;
@@ -80,7 +79,7 @@ public class CentralEntryHeader extends CommonHeader {
         if(comment==null){
             comment="";
         }
-        byte[] strBytes = StringsUtil.getBytesOfString(comment, "UTF-8");
+        byte[] strBytes = comment.getBytes(StandardCharsets.UTF_8);
         int length = strBytes.length;
         setCommentLength(length);
         if(length==0){

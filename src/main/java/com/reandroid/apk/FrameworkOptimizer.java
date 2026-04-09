@@ -31,7 +31,7 @@ import com.reandroid.arsc.value.*;
 
 import java.io.IOException;
 import java.util.*;
-
+import org.apache.commons.collections4.Predicate;
 import java.util.zip.ZipEntry;
 
  public class FrameworkOptimizer {

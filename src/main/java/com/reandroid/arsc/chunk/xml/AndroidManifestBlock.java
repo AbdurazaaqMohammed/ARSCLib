@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 @SuppressWarnings("unused")
 public class AndroidManifestBlock extends ResXmlDocument implements AndroidManifest {

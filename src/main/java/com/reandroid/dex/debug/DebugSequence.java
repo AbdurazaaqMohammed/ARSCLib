@@ -30,7 +30,7 @@ import com.reandroid.utils.collection.IterableIterator;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class DebugSequence extends FixedDexContainer implements Iterable<DebugElementBlock> {
 

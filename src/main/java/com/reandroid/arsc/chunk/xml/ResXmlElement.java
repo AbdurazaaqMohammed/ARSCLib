@@ -35,7 +35,7 @@ import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 import java.util.Iterator;
-
+import org.apache.commons.collections4.Predicate;
 
 public class ResXmlElement extends ResXmlDocumentOrElement implements Element<ResXmlNode> {
 
@@ -111,7 +111,7 @@ public class ResXmlElement extends ResXmlDocumentOrElement implements Element<Re
     public Iterator<ResXmlAttribute> getAttributes() {
         return getAttributeArray().clonedIterator();
     }
-    public Iterator<ResXmlAttribute> getAttributes(org.apache.commons.collections4.Predicate<? super ResXmlAttribute> predicate) {
+    public Iterator<ResXmlAttribute> getAttributes(Predicate<? super ResXmlAttribute> predicate) {
         return getAttributeArray().iterator(predicate);
     }
     public boolean removeAttribute(ResXmlAttribute attribute) {
@@ -120,7 +120,7 @@ public class ResXmlElement extends ResXmlDocumentOrElement implements Element<Re
     public boolean removeAttributeAt(int index) {
         return getAttributeArray().remove(index) != null;
     }
-    public boolean removeAttributeIf(org.apache.commons.collections4.Predicate<? super ResXmlAttribute> predicate) {
+    public boolean removeAttributeIf(Predicate<? super ResXmlAttribute> predicate) {
         return getAttributeArray().removeIf(predicate);
     }
     public boolean removeAttributesWithId(int resourceId) {
@@ -144,7 +144,7 @@ public class ResXmlElement extends ResXmlDocumentOrElement implements Element<Re
     public boolean removeNamespace(ResXmlNamespace namespace) {
         return getNamespaceList().remove((ResXmlStartNamespace) namespace);
     }
-    public boolean removeNamespaceIf(org.apache.commons.collections4.Predicate<? super ResXmlNamespace> predicate) {
+    public boolean removeNamespaceIf(Predicate<? super ResXmlNamespace> predicate) {
         return getNamespaceList().removeIf(predicate);
     }
     public Iterator<ResXmlNamespace> getVisibleNamespaces() {

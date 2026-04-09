@@ -30,7 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public abstract class ProfileFile extends FixedBlockContainer
         implements LinkableProfileItem, JSONConvert<JSONObject> {

@@ -17,17 +17,17 @@ package com.reandroid.utils.collection;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
+import org.apache.commons.collections4.Transformer;
 
 public class LinkedIterator<T> implements Iterator<T> {
     
-    private final Function<? super T, T> function;
+    private final Transformer<? super T, T> transformer;
     private T mNext;
     private boolean mComputed;
     
-    public LinkedIterator(boolean includeSelf, T item, Function<? super T, T> function) {
+    public LinkedIterator(boolean includeSelf, T item, Transformer<? super T, T> transformer) {
         this.mNext = item;
-        this.function = function;
+        this.transformer = transformer;
         this.mComputed = includeSelf;
     }
     
@@ -49,19 +49,19 @@ public class LinkedIterator<T> implements Iterator<T> {
         if (next == null || mComputed) {
             return next;
         }
-        next = function.apply(next);
+        next = transformer.transform(next);
         this.mNext = next;
         mComputed = next != null;
         return next;
     }
 
-    public static<T1> Iterator<T1> of(boolean includeSelf, T1 item, Function<? super T1, T1> function) {
+    public static<T1> Iterator<T1> of(boolean includeSelf, T1 item, Transformer<? super T1, T1> transformer) {
         if (item == null) {
             return EmptyIterator.of();
         }
-        return new LinkedIterator<>(includeSelf, item, function);
+        return new LinkedIterator<>(includeSelf, item, transformer);
     }
-    public static<T1> Iterator<T1> of(T1 item, Function<? super T1, T1> function) {
-        return of(false, item, function);
+    public static<T1> Iterator<T1> of(T1 item, Transformer<? super T1, T1> transformer) {
+        return of(false, item, transformer);
     }
 }

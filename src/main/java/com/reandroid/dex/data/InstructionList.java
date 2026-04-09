@@ -58,9 +58,10 @@ import com.reandroid.utils.collection.IterableIterator;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 public class InstructionList extends FixedBlockContainer implements
         Iterable<Ins>, SmaliFormat {
@@ -179,7 +180,7 @@ public class InstructionList extends FixedBlockContainer implements
             return registerValue < count && isFreeRegister(registerValue, startIndex);
         });
         List<Register> list = CollectionUtil.toUniqueList(iterator);
-        list.sort(CompareUtil.getComparableComparator());
+        Collections.sort(list, CompareUtil.getComparableComparator());
         return list;
     }
     public boolean isFreeRegister(int registerValue, int startIndex) {
@@ -215,7 +216,7 @@ public class InstructionList extends FixedBlockContainer implements
             T1 result = null;
             if (ins != null && ins.getOpcode() == opcode) {
                 result = (T1) ins;
-                if (filter != null && !filter.test(result)) {
+                if (filter != null && !filter.evaluate(result)) {
                     result = null;
                 }
             }

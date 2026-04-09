@@ -21,7 +21,7 @@ import com.reandroid.archive.block.ZipHeader;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Predicate;
+import org.apache.commons.collections4.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,7 +94,7 @@ public class ZipAligner {
         if (!alignmentMap.isEmpty()) {
             for (Map.Entry<Predicate<String>, Integer> entry: alignmentMap.entrySet()) {
                 Predicate<String> predicate = entry.getKey();
-                if (predicate.test(name)) {
+                if (predicate.evaluate(name)) {
                     return entry.getValue();
                 }
             }
