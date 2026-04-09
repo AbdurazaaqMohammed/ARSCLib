@@ -1,6 +1,10 @@
 # ARSCLib
 ## Android binary resources read/write java library
 This library is developed based on AOSP structure of androidfw/ResourceTypes.h , to totally replace aapt/aapt2
+
+* This branch for compatibility with older Android versions for [AntiSplit M](https://github.com/AbdurazaaqMohammed/AntiSplit-M)
+
+
 #### Read, write, modify and create
 * Resource table (resources.arsc)
 * Binary xml files (AndroidManifest.xml & resource xml)
